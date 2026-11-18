@@ -1,0 +1,2938 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>레시피 연금술사 - Recipe Alchemist</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Custom Styling & Keyframes for Animations -->
+  <style>
+    @keyframes bubble {
+      0% { transform: translateY(0) scale(1); opacity: 0; }
+      50% { opacity: 0.8; }
+      100% { transform: translateY(-40px) scale(0.6); opacity: 0; }
+    }
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(-5deg); }
+      50% { transform: rotate(5deg); }
+    }
+    .animate-bubble {
+      animation: bubble 1.8s infinite ease-in;
+    }
+    .animate-wiggle {
+      animation: wiggle 0.5s infinite ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .animate-fadeIn {
+      animation: fadeIn 0.25s ease-out forwards;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-slideUp {
+      animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes scaleUp {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .animate-scaleUp {
+      animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes rainbowFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    @keyframes spinSlow {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes spinReverse {
+      0% { transform: rotate(360deg); }
+      100% { transform: rotate(0deg); }
+    }
+    @keyframes pulseAura {
+      0%, 100% { opacity: 0.75; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.06); }
+    }
+    @keyframes shockwave {
+      0% { transform: scale(0.3); opacity: 1; }
+      100% { transform: scale(2.4); opacity: 0; }
+    }
+    @keyframes screenFlash {
+      0% { opacity: 0.95; }
+      100% { opacity: 0; }
+    }
+    @keyframes screenShake {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      15% { transform: translate(-6px, 4px) rotate(-0.6deg); }
+      30% { transform: translate(6px, -4px) rotate(0.6deg); }
+      45% { transform: translate(-5px, -3px) rotate(-0.4deg); }
+      60% { transform: translate(5px, 3px) rotate(0.4deg); }
+      75% { transform: translate(-3px, 2px) rotate(-0.2deg); }
+    }
+    @keyframes shineSweep {
+      0% { transform: translateX(-150%) skewX(-25deg); }
+      50%, 100% { transform: translateX(250%) skewX(-25deg); }
+    }
+    @keyframes particleRise {
+      0% { transform: translateY(0) scale(1.2) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(-220px) scale(0) rotate(180deg); opacity: 0; }
+    }
+    .tier-rainbow {
+      background-image: linear-gradient(270deg, #ff2400, #ff8800, #ffe600, #1de840, #00d4ff, #6a00ff, #ff00c8, #ff2400) !important;
+      background-size: 400% 400% !important;
+      animation: rainbowFlow 2s linear infinite !important;
+      border-color: #ffffff !important;
+      color: #ffffff !important;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 35px rgba(236, 72, 153, 0.7);
+    }
+    .tier-transcendent {
+      background-image: linear-gradient(270deg, #3b0764, #7e22ce, #c084fc, #f0abfc, #9333ea, #3b0764) !important;
+      background-size: 300% 300% !important;
+      animation: rainbowFlow 1.8s ease infinite !important;
+      border-color: #f3e8ff !important;
+      color: #ffffff !important;
+      text-shadow: 0 0 10px rgba(216, 180, 254, 1), 0 1px 4px rgba(0, 0, 0, 0.95);
+      box-shadow: 0 0 25px rgba(192, 132, 252, 0.95), 0 0 50px rgba(126, 34, 206, 0.85);
+    }
+    /* 등급별 초월 카드 아우라 */
+    .card-aura-legendary {
+      border: 2px solid #facc15 !important;
+      box-shadow: 0 0 40px rgba(250, 204, 21, 0.55), 0 0 80px rgba(245, 158, 11, 0.25), inset 0 0 25px rgba(250, 204, 21, 0.25) !important;
+    }
+    .card-aura-legend {
+      border: 2px solid #ff2a5f !important;
+      box-shadow: 0 0 50px rgba(244, 63, 94, 0.75), 0 0 100px rgba(220, 38, 38, 0.4), inset 0 0 30px rgba(244, 63, 94, 0.35) !important;
+    }
+    .card-aura-supreme {
+      border: 2px solid #ffffff !important;
+      box-shadow: 0 0 50px rgba(255, 0, 128, 0.7), 0 0 90px rgba(0, 212, 255, 0.6), 0 0 130px rgba(255, 230, 0, 0.45), inset 0 0 35px rgba(255, 255, 255, 0.35) !important;
+    }
+    .card-aura-transcendent {
+      border: 2px solid #e9d5ff !important;
+      box-shadow: 0 0 60px rgba(168, 85, 247, 0.9), 0 0 110px rgba(126, 34, 206, 0.75), 0 0 160px rgba(88, 28, 135, 0.6), inset 0 0 45px rgba(216, 180, 254, 0.45) !important;
+    }
+    /* 음식 사진 위 시네마틱 다중 아우라 */
+    .food-aura-yellow {
+      background: radial-gradient(circle at 50% 50%, rgba(254, 240, 138, 0.55) 0%, rgba(250, 204, 21, 0.35) 35%, rgba(217, 119, 6, 0.15) 65%, transparent 80%);
+      box-shadow: inset 0 0 45px rgba(250, 204, 21, 0.85);
+      animation: pulseAura 2s infinite ease-in-out;
+    }
+    .food-aura-red {
+      background: radial-gradient(circle at 50% 50%, rgba(254, 202, 202, 0.5) 0%, rgba(239, 68, 68, 0.45) 35%, rgba(153, 27, 27, 0.25) 65%, transparent 85%);
+      box-shadow: inset 0 0 55px rgba(244, 63, 94, 0.95);
+      animation: pulseAura 1.5s infinite ease-in-out;
+    }
+    .food-aura-spectrum {
+      background: conic-gradient(from 0deg, #ff0040, #ff8000, #ffff00, #00ff40, #00ffff, #0040ff, #bf00ff, #ff0040);
+      opacity: 0.7;
+      filter: blur(18px);
+      animation: spinSlow 4s linear infinite;
+    }
+    .food-aura-purple {
+      background: conic-gradient(from 0deg, #2e1065, #7e22ce, #c084fc, #f0abfc, #6b21a8, #2e1065);
+      opacity: 0.85;
+      filter: blur(16px);
+      animation: spinSlow 3.5s linear infinite;
+    }
+    .food-inner-purple-ring {
+      box-shadow: inset 0 0 60px rgba(216, 180, 254, 0.95), inset 0 0 95px rgba(147, 51, 234, 0.9);
+      animation: pulseAura 1.4s infinite ease-in-out;
+    }
+    .food-inner-prism-ring {
+      box-shadow: inset 0 0 50px rgba(255, 255, 255, 0.9), inset 0 0 80px rgba(236, 72, 153, 0.8);
+    }
+    .shine-sweep-bar {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 45%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+      animation: shineSweep 3.2s infinite ease-in-out;
+    }
+    .animate-flash {
+      animation: screenFlash 0.95s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .animate-shake {
+      animation: screenShake 0.55s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
+    @keyframes flashHold1s {
+      0% { opacity: 1; }
+      75% { opacity: 0.95; }
+      100% { opacity: 0; }
+    }
+    @keyframes flashHold2s {
+      0% { opacity: 1; }
+      80% { opacity: 0.95; }
+      100% { opacity: 0; }
+    }
+    @keyframes flashHold5s {
+      0% { opacity: 1; background-position: 0% 50%; }
+      50% { opacity: 0.98; background-position: 100% 50%; }
+      85% { opacity: 0.95; background-position: 200% 50%; }
+      100% { opacity: 0; background-position: 300% 50%; }
+    }
+    .animate-flash-1s {
+      animation: flashHold1s 1s ease-out forwards;
+    }
+    .animate-flash-2s {
+      animation: flashHold2s 2s ease-out forwards;
+    }
+    .animate-flash-5s {
+      background-image: linear-gradient(270deg, #ff2400, #ff8800, #ffe600, #1de840, #00d4ff, #6a00ff, #ff00c8, #ff2400);
+      background-size: 400% 400%;
+      animation: flashHold5s 5s linear forwards;
+    }
+    .animate-flash-purple-5s {
+      background-image: linear-gradient(270deg, #1e1b4b, #581c87, #9333ea, #d8b4fe, #7e22ce, #3b0764, #1e1b4b);
+      background-size: 400% 400%;
+      animation: flashHold5s 5s linear forwards;
+    }
+    .supreme-persistent-bg {
+      background-image: linear-gradient(270deg, rgba(255,36,0,0.32), rgba(255,136,0,0.32), rgba(255,230,0,0.32), rgba(29,232,64,0.32), rgba(0,212,255,0.32), rgba(106,0,255,0.32), rgba(255,0,200,0.32), rgba(255,36,0,0.32));
+      background-size: 400% 400%;
+      animation: rainbowFlow 4s linear infinite;
+    }
+    .transcendent-persistent-bg {
+      background-image: radial-gradient(circle at 50% 35%, rgba(192,132,252,0.42), rgba(126,34,206,0.35), rgba(59,7,100,0.45), rgba(15,23,42,0.2));
+      background-size: 200% 200%;
+      animation: rainbowFlow 3.5s ease infinite;
+      box-shadow: inset 0 0 120px rgba(168, 85, 247, 0.55);
+    }
+    .magic-particle {
+      position: absolute;
+      border-radius: 9999px;
+      pointer-events: none;
+      animation: particleRise 1.8s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100 font-sans pb-16 antialiased selection:bg-purple-800 selection:text-purple-100 relative">
+  <!-- 고등급 등장 시 화면 전체 섬광 오버레이 -->
+  <div id="epic-flash-overlay" class="hidden fixed inset-0 pointer-events-none z-[100] flex items-center justify-center"></div>
+  <!-- 최상/초월 등급 달성 후 다음 요리 시작 전까지 화면 전체를 감싸는 지속 오라 -->
+  <div id="supreme-bg-aura" class="hidden fixed inset-0 pointer-events-none z-[5] supreme-persistent-bg transition-opacity duration-700"></div>
+  <!-- Decorative Star Background -->
+  <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(88,28,135,0.15),transparent_50%)] pointer-events-none"></div>
+
+  <!-- Header -->
+  <header class="relative border-b border-purple-900/40 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div onclick="handleSecretLogoClick()" class="flex items-center space-x-3 cursor-pointer select-none" title="Recipe Alchemist">
+        <div class="bg-gradient-to-tr from-purple-600 to-pink-500 p-2.5 rounded-xl shadow-lg shadow-purple-500/20 animate-pulse">
+          <!-- Custom Potion SVG Icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-white">
+            <path d="M12 2v6" />
+            <path d="M8 8h8" />
+            <path d="M16 8l3.6 7.2a4 4 0 0 1-3.6 5.8H8a4 4 0 0 1-3.6-5.8L8 8" />
+            <path d="M6 14h12" />
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl md:text-2xl font-bold tracking-tight bg-gradient-to-r from-purple-400 via-pink-400 to-amber-300 bg-clip-text text-transparent">
+            레시피 연금술사
+          </h1>
+          <p class="text-xs text-purple-300/60 font-medium">Recipe Alchemist v1.2</p>
+        </div>
+      </div>
+
+      <!-- Navigation & Setup Tabs -->
+      <div class="flex items-center space-x-2">
+        <!-- General Settings Button -->
+        <button
+          onclick="openGeneralSettingsModal()"
+          id="header-settings-btn"
+          class="p-2 rounded-lg bg-slate-900 border border-purple-900/30 text-purple-300 hover:text-white hover:border-purple-500/50 transition-all flex items-center space-x-1 text-xs font-bold"
+          title="일반 환경설정 & 예능/파티 옵션"
+        >
+          <i data-lucide="settings" class="w-4 h-4"></i>
+          <span class="hidden sm:inline">설정</span>
+        </button>
+
+        <!-- Epic Effect ON/OFF Toggle Button -->
+        <button
+          onclick="toggleEpicEffects()"
+          id="header-effect-btn"
+          class="px-2.5 py-2 rounded-lg bg-purple-950/60 border border-purple-500/50 text-amber-300 hover:text-white transition-all flex items-center space-x-1 text-xs font-bold shadow-sm"
+          title="고등급 등장 화면 연출 효과 켜기/끄기"
+        >
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span id="header-effect-label">연출 ON</span>
+        </button>
+
+        <!-- 1:1 Battle Mode Toggle Button (Next to API Key) -->
+        <button
+          onclick="toggleBattleMode()"
+          id="header-battle-btn"
+          class="px-2.5 py-2 rounded-lg bg-slate-900 border border-purple-900/30 text-slate-300 hover:text-white hover:border-rose-500/50 transition-all flex items-center space-x-1.5 text-xs font-bold"
+          title="1:1 요리 대결 배틀 모드 전환"
+        >
+          <i data-lucide="swords" class="w-3.5 h-3.5 text-rose-400"></i>
+          <span id="header-battle-label">1:1 배틀</span>
+        </button>
+
+        <!-- API Key Indicator Button -->
+        <button 
+          onclick="openKeyModal()" 
+          id="key-indicator" 
+          class="p-2 rounded-lg bg-slate-900 border border-purple-900/30 text-amber-500 hover:text-amber-400 hover:bg-slate-850 transition-all flex items-center space-x-1"
+          title="마력 동력원(API Key) 설정"
+        >
+          <i data-lucide="key" class="w-4 h-4"></i>
+          <span id="key-status-dot" class="w-2 h-2 rounded-full bg-red-500 inline-block animate-ping"></span>
+        </button>
+
+        <div class="flex bg-slate-900 border border-purple-900/30 rounded-lg p-1">
+          <button id="tab-alchemy" onclick="switchTab('alchemy')" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs md:text-sm font-medium transition-all bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow">
+            <i data-lucide="wand-2" class="w-3.5 h-3.5"></i>
+            <span>연금 가마솥</span>
+          </button>
+          <button id="tab-history" onclick="switchTab('history')" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs md:text-sm font-medium transition-all text-slate-400 hover:text-white relative">
+            <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+            <span>연금 레시피 북</span>
+            <span id="history-badge" class="hidden absolute -top-1.5 -right-1 bg-amber-500 text-slate-950 text-[10px] font-extrabold w-4 h-4 rounded-full flex items-center justify-center animate-bounce">0</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="max-w-5xl mx-auto px-4 mt-8 relative z-10">
+    <!-- 1. Alchemy Tab -->
+    <div id="view-alchemy" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <!-- Left Column: Alchemy Setup -->
+      <div class="lg:col-span-7 space-y-6">
+        <!-- Battle Turn Status Banner (Hidden in Solo Mode) -->
+        <div id="battle-banner" class="hidden p-4 rounded-2xl border-2 border-blue-500/60 bg-gradient-to-r from-blue-950/60 via-slate-900 to-slate-900 shadow-lg space-y-3 animate-fadeIn">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <span id="battle-turn-badge" class="px-2.5 py-1 rounded-lg text-xs font-black bg-blue-600 text-white shadow">PLAYER 1 턴</span>
+              <span id="battle-turn-guide" class="text-xs text-blue-200 font-semibold">상대방이 보지 못하게 재료를 고르세요!</span>
+            </div>
+            <button onclick="resetBattle()" class="text-[11px] text-slate-400 hover:text-white underline">처음부터 다시</button>
+          </div>
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <div class="bg-slate-950/70 border border-blue-800/40 rounded-xl p-2 flex items-center space-x-2">
+              <span class="text-xs font-black text-blue-400 shrink-0">🔵 P1</span>
+              <input type="text" id="p1-name-input" value="플레이어 1" placeholder="P1 닉네임" class="w-full bg-transparent text-xs text-white font-bold outline-none" />
+            </div>
+            <div class="bg-slate-950/70 border border-rose-800/40 rounded-xl p-2 flex items-center space-x-2">
+              <span class="text-xs font-black text-rose-400 shrink-0">🔴 P2</span>
+              <input type="text" id="p2-name-input" value="플레이어 2" placeholder="P2 닉네임" class="w-full bg-transparent text-xs text-white font-bold outline-none" />
+            </div>
+          </div>
+          <div id="p1-locked-notice" class="hidden bg-blue-950/50 border border-blue-500/40 rounded-xl p-2.5 text-xs text-blue-200 flex items-center justify-between">
+            <span>🔒 <strong id="p1-locked-name">플레이어 1</strong>의 비밀 레시피 봉인 완료! (재료 <span id="p1-locked-count">0</span>개)</span>
+            <span class="text-[10px] text-rose-300 font-bold animate-pulse">이제 P2 차례입니다 👉</span>
+          </div>
+        </div>
+
+        <!-- Concept Intro Card (Solo Mode Default) -->
+        <div id="solo-intro-card" class="p-5 rounded-2xl border border-purple-900/30 bg-purple-950/10 backdrop-blur-md shadow-inner flex items-start space-x-4">
+          <div class="bg-purple-900/30 p-3 rounded-xl border border-purple-500/20 text-purple-400 shrink-0">
+            <i data-lucide="chef-hat" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-semibold text-purple-200">냉장고 털기, 지겨우셨나요?</h3>
+            <p class="text-sm text-slate-400 mt-1 leading-relaxed">
+              남아있는 평범한 재료를 연성식에 추가하고 가마솥 주문을 외워보세요. 
+              AI 현자가 당신만을 위한 비법 레시피와 음식 이미지를 소환합니다!
+            </p>
+          </div>
+        </div>
+
+        <!-- 1. Ingredient Selector -->
+        <div class="p-6 rounded-2xl border border-slate-800 bg-slate-900/60 backdrop-blur-md shadow-xl space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold flex items-center space-x-2 text-purple-300">
+              <span class="bg-purple-900/50 p-1.5 rounded-lg text-purple-400">1</span>
+              <span>마법 재료를 가마솥에 담기</span>
+            </h2>
+            <span class="text-xs text-slate-500">
+              담긴 재료: <span id="ingredient-count" class="text-purple-400 font-bold">0개</span>
+            </span>
+          </div>
+
+          <!-- Custom Input -->
+          <div class="flex space-x-2">
+            <div class="relative flex-1">
+              <input
+                type="text"
+                id="custom-input"
+                onkeydown="if(event.key==='Enter') addCustomIngredient()"
+                placeholder="재료 직접 써서 넣기 (예: 민트초코, 불닭소스, 식은 치킨...)"
+                class="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 text-slate-100 placeholder-slate-600 rounded-xl py-3 pl-4 pr-10 text-sm outline-none transition-all"
+              />
+              <i data-lucide="sparkles" class="w-4 h-4 text-purple-500/50 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+            </div>
+            <button
+              onclick="addCustomIngredient()"
+              class="bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white p-3 rounded-xl transition-all shadow-lg shadow-purple-600/20 flex items-center justify-center"
+              title="재료 추가"
+            >
+              <i data-lucide="plus" class="w-5 h-5"></i>
+            </button>
+          </div>
+
+          <!-- Selected Ingredients Shelf -->
+          <div id="selected-ingredients-wrapper" class="hidden bg-slate-950/60 border border-purple-900/20 rounded-xl p-3">
+            <p class="text-xs font-semibold text-purple-400/80 mb-2">가마솥에 둥둥 떠 있는 재료들:</p>
+            <div id="selected-ingredients-list" class="flex flex-wrap gap-2"></div>
+          </div>
+          <div id="empty-ingredients-placeholder" class="bg-slate-950/40 border border-dashed border-slate-800 rounded-xl p-6 text-center text-slate-500 text-xs">
+            아래 프리셋을 클릭하거나 위 입력창에 재료를 직접 써서 넣어주세요.
+          </div>
+
+          <!-- Preset Suggestions -->
+          <div class="space-y-2">
+            <p class="text-xs font-semibold text-slate-400">마법 보관소의 냉장고 재료:</p>
+            <div id="presets-grid" class="grid grid-cols-3 sm:grid-cols-5 gap-2"></div>
+          </div>
+        </div>
+
+        <!-- 2. Magic Catalyst Selection -->
+        <div class="p-6 rounded-2xl border border-slate-800 bg-slate-900/60 backdrop-blur-md shadow-xl space-y-4">
+          <h2 class="text-lg font-bold flex items-center space-x-2 text-purple-300">
+            <span class="bg-purple-900/50 p-1.5 rounded-lg text-purple-400">2</span>
+            <span>레시피 연금 촉매제 설정</span>
+          </h2>
+
+          <!-- Cook Style Category -->
+          <div class="space-y-2">
+            <label class="text-xs font-semibold text-slate-400">원하는 연금 분파 (요리 스타일)</label>
+            <div id="styles-grid" class="grid grid-cols-2 md:grid-cols-3 gap-2"></div>
+          </div>
+
+          <!-- Difficulty / Mana Level -->
+          <div class="space-y-2">
+            <label class="text-xs font-semibold text-slate-400">주입할 마나 소모도 (요리 강도 & 현실 모드)</label>
+            <div id="mana-levels-list" class="space-y-2"></div>
+          </div>
+
+          <!-- Critic Persona Selector -->
+          <div class="space-y-2 pt-1">
+            <label class="text-xs font-semibold text-slate-400">심사위원 성향 선택 (평론 스타일)</label>
+            <div id="critic-persona-grid" class="grid grid-cols-2 gap-2"></div>
+          </div>
+        </div>
+
+        <!-- Error Box -->
+        <div id="error-box" class="hidden p-4 bg-red-950/30 border border-red-500/50 rounded-xl text-xs text-red-200 whitespace-pre-line leading-relaxed"></div>
+
+        <!-- Transmute Button -->
+        <button
+          id="transmute-btn"
+          onclick="handleTransmute()"
+          class="w-full py-4 px-6 rounded-2xl font-bold text-base transition-all duration-300 flex items-center justify-center space-x-3 shadow-lg bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:from-purple-500 hover:to-amber-400 text-white shadow-purple-600/30 scale-100 hover:scale-[1.02] active:scale-95"
+        >
+          <i data-lucide="flame" class="w-5 h-5 animate-bounce"></i>
+          <span class="text-lg font-bold tracking-wider">요리 마법 대연성 시작하기</span>
+        </button>
+      </div>
+
+      <!-- Right Column: Alchemy Result -->
+      <div id="result-column" class="lg:col-span-5 flex flex-col justify-start">
+        <!-- Default State -->
+        <div id="result-empty" class="border-2 border-dashed border-slate-800 rounded-3xl p-12 text-center flex flex-col items-center justify-center space-y-4 min-h-[450px]">
+          <div class="bg-slate-900 p-4 rounded-full border border-slate-800 text-slate-500">
+            <i data-lucide="wand-2" class="w-12 h-12"></i>
+          </div>
+          <div class="max-w-xs">
+            <h3 class="text-base font-bold text-slate-400">연금 준비 완료</h3>
+            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+              가마솥에 재료를 가득 투입하고 하단의 "연성 시작" 버튼을 클릭하면, AI 연금술사들의 마법 조리법이 이곳에 깃들게 됩니다!
+            </p>
+          </div>
+        </div>
+
+        <!-- Brewing State -->
+        <div id="result-brewing" class="hidden border border-purple-800/40 bg-slate-900/40 rounded-3xl p-8 text-center flex flex-col items-center justify-center space-y-6 animate-pulse shadow-inner min-h-[450px]">
+          <!-- Magic Pot Animation -->
+          <div class="relative">
+            <div class="w-32 h-32 bg-purple-900/20 border-4 border-purple-500 rounded-full flex items-center justify-center shadow-lg shadow-purple-500/20 relative overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-t from-purple-700/60 to-pink-500/60 animate-bounce" style="animation-duration: 2s;"></div>
+              <!-- Custom Potion SVG -->
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-14 h-14 text-white relative z-10 animate-wiggle">
+                <path d="M12 2v6" />
+                <path d="M8 8h8" />
+                <path d="M16 8l3.6 7.2a4 4 0 0 1-3.6 5.8H8a4 4 0 0 1-3.6-5.8L8 8" />
+                <path d="M6 14h12" />
+              </svg>
+            </div>
+            <!-- Bubbles -->
+            <span class="absolute -top-2 left-6 w-3 h-3 bg-pink-400 rounded-full animate-bubble"></span>
+            <span class="absolute -top-4 right-10 w-2 h-2 bg-purple-400 rounded-full animate-bubble" style="animation-delay: 200ms;"></span>
+            <span class="absolute top-8 -right-2 w-4 h-4 bg-amber-400 rounded-full animate-bubble" style="animation-delay: 500ms;"></span>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold text-purple-300">비법 가마솥 작동 중</h3>
+            <p id="brewing-quote-text" class="text-sm text-slate-400 mt-2 px-6 h-12 leading-relaxed">
+              비약을 젓는 중... 솥 안에서 신비한 향이 피어오릅니다.
+            </p>
+          </div>
+        </div>
+
+        <!-- Recipe Showcase Card -->
+        <div id="recipe-card" class="hidden border border-purple-900/40 bg-slate-900 rounded-3xl overflow-hidden shadow-2xl shadow-purple-500/5 animate-slideUp"></div>
+      </div>
+    </div>
+
+    <!-- Battle Result Arena (Full Width below or replaces view when battle finishes) -->
+    <div id="battle-arena" class="hidden mt-8 space-y-6 animate-slideUp"></div>
+
+    <!-- 2. History Tab (Library) -->
+    <div id="view-history" class="hidden space-y-6 max-w-4xl mx-auto">
+      <div class="flex items-center justify-between border-b border-purple-900/30 pb-4">
+        <div>
+          <h2 class="text-xl font-bold text-purple-200">연금술 도서관 (마법 레시피 책)</h2>
+          <p class="text-xs text-slate-500 mt-1">지금껏 가마솥에서 탄생한 영광의 레시피 목록입니다.</p>
+        </div>
+        <button
+          id="clear-history-btn"
+          onclick="openConfirmModal()"
+          class="hidden flex items-center space-x-1 px-3 py-1.5 border border-red-900/50 hover:bg-red-950/30 rounded-lg text-xs text-red-400 transition-colors"
+        >
+          <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+          <span>요리책 비우기</span>
+        </button>
+      </div>
+
+      <div id="history-empty" class="text-center py-20 border-2 border-dashed border-slate-800 rounded-3xl space-y-4">
+        <i data-lucide="book-open-check" class="w-16 h-16 text-slate-700 mx-auto"></i>
+        <div>
+          <h3 class="text-base font-semibold text-slate-400">아직 조리도서관이 비어있습니다</h3>
+          <p class="text-xs text-slate-600 mt-1">첫 번째 재료를 연성하면 이곳에 자동으로 영구 보존됩니다.</p>
+        </div>
+      </div>
+
+      <div id="history-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </div>
+  </main>
+
+  <!-- Modal Overlay (History Detail) -->
+  <div id="detail-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4"></div>
+
+  <!-- Custom Confirmation Dialog Modal -->
+  <div id="confirm-modal" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-red-900/40 rounded-3xl max-w-sm w-full p-6 shadow-2xl animate-scaleUp text-center space-y-4">
+      <div class="w-12 h-12 bg-red-900/30 border border-red-500/20 text-red-400 rounded-full flex items-center justify-center mx-auto">
+        <i data-lucide="rotate-ccw" class="w-6 h-6"></i>
+      </div>
+      <div>
+        <h4 class="text-base font-bold text-slate-200">기록 초기화 경고</h4>
+        <p class="text-xs text-slate-400 mt-1.5 leading-relaxed">
+          정말로 요리책의 보존된 영웅들의 레시피 기록을 전부 파괴하시겠습니까? 이 마법은 되돌릴 수 없습니다.
+        </p>
+      </div>
+      <div class="flex space-x-2 pt-2">
+        <button onclick="closeConfirmModal()" class="flex-1 py-2 bg-slate-850 hover:bg-slate-800 text-slate-300 text-xs font-semibold rounded-xl transition-all border border-slate-800">
+          마법 취소
+        </button>
+        <button onclick="clearHistory()" class="flex-1 py-2 bg-red-600 hover:bg-red-500 text-white text-xs font-semibold rounded-xl transition-all shadow-lg shadow-red-600/20">
+          기록 영구 파괴
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- API Key Setup Modal -->
+  <div id="key-modal" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-purple-900/40 rounded-3xl max-w-md w-full p-6 shadow-2xl animate-scaleUp space-y-4">
+      <div class="flex items-center space-x-3">
+        <div class="p-2.5 rounded-xl bg-purple-900/30 border border-purple-500/20 text-amber-500">
+          <i data-lucide="key" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h4 class="text-base font-bold text-slate-200">마력 동력원(API Key) 설정</h4>
+          <p class="text-[10px] text-purple-400">Gemini와 Imagen 마법을 발현시키기 위한 심장부</p>
+        </div>
+      </div>
+      <div class="text-xs text-slate-400 leading-relaxed space-y-1.5">
+        <p>로컬 브라우저 혹은 개인 가상 서버에서 작동시키려면 Google의 마력(API Key)이 필요합니다.</p>
+        <a href="https://aistudio.google.com/" target="_blank" class="inline-flex items-center text-purple-400 hover:text-purple-300 font-bold underline">
+          <span>구글 AI 스튜디오에서 10초 만에 무료 마력석 발급받기</span>
+          <i data-lucide="external-link" class="w-3 h-3 ml-1"></i>
+        </a>
+      </div>
+      <div>
+        <label class="block text-[11px] font-semibold text-slate-500 mb-1.5">GEMINI API KEY 주입</label>
+        <div class="relative">
+          <input
+            type="password"
+            id="user-api-key"
+            placeholder="AIza... 또는 AQ.Ab8... 형태의 마력 키를 입력하세요"
+            class="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 text-slate-100 placeholder-slate-700 rounded-xl py-3.5 pl-4 pr-10 text-xs outline-none transition-all"
+          />
+          <button onclick="toggleKeyVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-600 hover:text-slate-400">
+            <i id="key-eye" data-lucide="eye-off" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+      <div class="flex space-x-2 pt-2">
+        <button onclick="closeKeyModal()" class="flex-1 py-2.5 bg-slate-850 hover:bg-slate-800 text-slate-300 text-xs font-semibold rounded-xl transition-all border border-slate-800">
+          다음에 설정
+        </button>
+        <button onclick="saveApiKey()" class="flex-1 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white text-xs font-semibold rounded-xl transition-all shadow-lg shadow-purple-600/20">
+          마력석 박기
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Secret Developer Settings Modal (5x Logo Click) -->
+  <div id="dev-modal" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[110] flex items-center justify-center p-4">
+    <div class="bg-slate-900 border-2 border-amber-500/50 rounded-3xl max-w-lg w-full p-6 shadow-2xl animate-scaleUp space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center space-x-2.5">
+          <div class="p-2 rounded-xl bg-amber-500/20 border border-amber-400/40 text-amber-300">
+            <i data-lucide="sliders" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h4 class="text-base font-black text-amber-300">비밀 연금술사 개발자 콘솔</h4>
+            <p class="text-[10px] text-slate-400">솔로/배틀 점수 조작, 재료 자동 변환 및 특수 치트 제어</p>
+          </div>
+        </div>
+        <button onclick="closeDevModal()" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- 1. Solo Score Override -->
+      <div class="space-y-2 bg-slate-950/60 p-3.5 rounded-2xl border border-purple-900/40">
+        <div class="flex items-center justify-between">
+          <label class="text-xs font-bold text-purple-300">1. [솔로 모드] 점수 고정 (1~500점)</label>
+          <label class="flex items-center space-x-1.5 text-[11px] text-amber-300 font-bold cursor-pointer">
+            <input type="checkbox" id="dev-solo-score-enable" onchange="syncDevSettings()" class="rounded accent-amber-500" />
+            <span>솔로 조작 ON</span>
+          </label>
+        </div>
+        <div class="flex items-center space-x-3">
+          <input type="range" id="dev-solo-score-range" min="1" max="500" value="500" oninput="syncDevNumber('solo', this.value)" class="flex-1 accent-purple-400" />
+          <input type="number" id="dev-solo-score-number" min="1" max="500" value="500" oninput="syncDevNumber('solo', this.value)" class="w-16 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs text-center font-black text-amber-300 outline-none" />
+          <span id="dev-solo-tier-preview" class="text-[11px] font-black text-purple-300 w-12 text-right">초월</span>
+        </div>
+        <div class="pt-1 border-t border-slate-800/80 flex items-center justify-between">
+          <span class="text-[11px] text-slate-400">조작 점수에 맞춰 재료/계량 자동 변환</span>
+          <label class="flex items-center space-x-1.5 text-[11px] text-emerald-300 font-bold cursor-pointer">
+            <input type="checkbox" id="dev-solo-adapt-ingredients" checked onchange="syncDevSettings()" class="rounded accent-emerald-500" />
+            <span>자동 변환 ON</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- 2. Battle P1 & P2 Individual Score Override -->
+      <div class="space-y-3 bg-slate-950/60 p-3.5 rounded-2xl border border-rose-900/40">
+        <div class="flex items-center justify-between">
+          <label class="text-xs font-bold text-rose-300">2. [1:1 배틀 모드] 플레이어별 개별 점수 고정</label>
+        </div>
+
+        <!-- P1 Row -->
+        <div class="space-y-1.5 bg-blue-950/20 p-2.5 rounded-xl border border-blue-800/40">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-black text-blue-400">🔵 Player 1 점수</span>
+            <label class="flex items-center space-x-1.5 text-[11px] text-blue-200 font-bold cursor-pointer">
+              <input type="checkbox" id="dev-p1-score-enable" onchange="syncDevSettings()" class="rounded accent-blue-500" />
+              <span>P1 고정 ON</span>
+            </label>
+          </div>
+          <div class="flex items-center space-x-2.5">
+            <input type="range" id="dev-p1-score-range" min="1" max="500" value="500" oninput="syncDevNumber('p1', this.value)" class="flex-1 accent-blue-400" />
+            <input type="number" id="dev-p1-score-number" min="1" max="500" value="500" oninput="syncDevNumber('p1', this.value)" class="w-16 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs text-center font-black text-blue-300 outline-none" />
+            <span id="dev-p1-tier-preview" class="text-[11px] font-black text-purple-300 w-12 text-right">초월</span>
+          </div>
+        </div>
+
+        <!-- P2 Row -->
+        <div class="space-y-1.5 bg-rose-950/20 p-2.5 rounded-xl border border-rose-800/40">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-black text-rose-400">🔴 Player 2 점수</span>
+            <label class="flex items-center space-x-1.5 text-[11px] text-rose-200 font-bold cursor-pointer">
+              <input type="checkbox" id="dev-p2-score-enable" onchange="syncDevSettings()" class="rounded accent-rose-500" />
+              <span>P2 고정 ON</span>
+            </label>
+          </div>
+          <div class="flex items-center space-x-2.5">
+            <input type="range" id="dev-p2-score-range" min="1" max="500" value="95" oninput="syncDevNumber('p2', this.value)" class="flex-1 accent-rose-400" />
+            <input type="number" id="dev-p2-score-number" min="1" max="500" value="95" oninput="syncDevNumber('p2', this.value)" class="w-16 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs text-center font-black text-rose-300 outline-none" />
+            <span id="dev-p2-tier-preview" class="text-[11px] font-black text-rose-300 w-12 text-right">일반</span>
+          </div>
+        </div>
+
+        <div class="pt-1 border-t border-slate-800/80 flex items-center justify-between">
+          <span class="text-[11px] text-slate-400">배틀에서도 조작 점수에 맞춰 재료 자동 변환</span>
+          <label class="flex items-center space-x-1.5 text-[11px] text-emerald-300 font-bold cursor-pointer">
+            <input type="checkbox" id="dev-battle-adapt-ingredients" checked onchange="syncDevSettings()" class="rounded accent-emerald-500" />
+            <span>자동 변환 ON</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- 3. Fun Extra Developer Cheats -->
+      <div class="space-y-2.5 bg-slate-950/60 p-3.5 rounded-2xl border border-amber-900/40">
+        <label class="text-xs font-bold text-amber-300">3. 꿀잼 특수 치트 & 툴박스</label>
+        
+        <div class="flex items-center justify-between bg-slate-900/90 p-2.5 rounded-xl border border-slate-800">
+          <div>
+            <p class="text-xs font-bold text-pink-300">🔥 심사위원 10배 폭주 모드</p>
+            <p class="text-[10px] text-slate-400">미식가 독설/찬양과 할머니 주접 텐션을 극한으로 증폭</p>
+          </div>
+          <input type="checkbox" id="dev-extreme-critic" onchange="syncDevSettings()" class="w-4 h-4 rounded accent-pink-500 cursor-pointer" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="injectChaosIngredients()" class="py-2.5 px-3 rounded-xl bg-purple-900/40 hover:bg-purple-800/50 border border-purple-500/40 text-purple-200 text-xs font-bold transition-all flex items-center justify-center space-x-1.5">
+            <span>🎲 기괴한 랜덤 재료 투하</span>
+          </button>
+          <button onclick="injectGourmetIngredients()" class="py-2.5 px-3 rounded-xl bg-amber-900/30 hover:bg-amber-800/40 border border-amber-500/40 text-amber-200 text-xs font-bold transition-all flex items-center justify-center space-x-1.5">
+            <span>👑 황금 반전 재료 세트</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 4. Instant FX Test -->
+      <div class="space-y-2">
+        <label class="text-xs font-bold text-purple-300">4. 초월 화면 연출 즉시 테스트</label>
+        <div class="grid grid-cols-5 gap-1.5">
+          <button onclick="testDevFx('전설')" class="py-2 px-1.5 rounded-xl bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-400/50 text-yellow-300 text-[11px] font-bold transition-all">
+            ☀️ 전설
+          </button>
+          <button onclick="testDevFx('레전드')" class="py-2 px-1.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/50 text-red-300 text-[11px] font-bold transition-all">
+            🔥 레전드
+          </button>
+          <button onclick="testDevFx('최상')" class="py-2 px-1.5 rounded-xl bg-pink-500/20 hover:bg-pink-500/30 border border-pink-400/50 text-pink-200 text-[11px] font-bold transition-all">
+            🌈 최상
+          </button>
+          <button onclick="testDevFx('초월')" class="py-2 px-1.5 rounded-xl bg-purple-600/35 hover:bg-purple-500/45 border border-purple-300/70 text-purple-100 text-[11px] font-black transition-all shadow">
+            🌌 초월
+          </button>
+          <button onclick="stopSupremePersistentEffect()" class="py-2 px-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-300 text-[11px] font-bold transition-all">
+            ⏹️ 중지
+          </button>
+        </div>
+      </div>
+
+      <!-- Footer Actions -->
+      <div class="flex space-x-2 pt-2 border-t border-slate-800">
+        <button onclick="resetDevOverrides()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-xl transition-all border border-slate-700">
+          🔄 전체 초기화
+        </button>
+        <button onclick="closeDevModal()" class="flex-1 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 text-xs font-black rounded-xl transition-all shadow-lg">
+          적용 후 닫기
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- General Settings Modal (Practical + Party/Variety Options) -->
+  <div id="general-settings-modal" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[90] flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-purple-500/40 rounded-3xl max-w-lg w-full p-6 shadow-2xl animate-scaleUp space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center space-x-2.5">
+          <div class="p-2 rounded-xl bg-purple-600/20 border border-purple-400/40 text-purple-300">
+            <i data-lucide="settings" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h4 class="text-base font-black text-white">연금술사 일반 & 파티 설정</h4>
+            <p class="text-[10px] text-slate-400">실용 요리 옵션부터 친구들과 즐기는 예능 벌칙 모드까지!</p>
+          </div>
+        </div>
+        <button onclick="closeGeneralSettingsModal()" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Section 1: Practical Settings -->
+      <div class="space-y-2.5 bg-slate-950/60 p-3.5 rounded-2xl border border-slate-800">
+        <p class="text-xs font-bold text-purple-300 flex items-center space-x-1.5">
+          <span>🛠️ 실용 & 편의 설정</span>
+        </p>
+
+        <div class="flex items-center justify-between bg-slate-900/90 p-2.5 rounded-xl border border-slate-800">
+          <div>
+            <p class="text-xs font-bold text-slate-200">🔊 마법 효과음 & 팡파르</p>
+            <p class="text-[10px] text-slate-400">가마솥 연성 및 고등급 등장 시 사운드 이펙트 재생</p>
+          </div>
+          <input type="checkbox" id="set-sound-enabled" checked onchange="syncGeneralSettings()" class="w-4 h-4 rounded accent-purple-500 cursor-pointer" />
+        </div>
+
+        <div class="flex items-center justify-between bg-slate-900/90 p-2.5 rounded-xl border border-slate-800">
+          <div>
+            <p class="text-xs font-bold text-slate-200">🖼️ 음식 사진 자동 생성</p>
+            <p class="text-[10px] text-slate-400">끄면 이미지 생성을 건너뛰어 초고속으로 점수만 확인</p>
+          </div>
+          <input type="checkbox" id="set-image-enabled" checked onchange="syncGeneralSettings()" class="w-4 h-4 rounded accent-purple-500 cursor-pointer" />
+        </div>
+
+        <div class="bg-slate-900/90 p-2.5 rounded-xl border border-slate-800 space-y-1.5">
+          <p class="text-xs font-bold text-slate-200">🥗 식단 / 맞춤 제약 조건</p>
+          <select id="set-dietary-filter" onchange="syncGeneralSettings()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 text-xs text-slate-200 outline-none">
+            <option value="none">제한 없음 (모든 조리법 허용)</option>
+            <option value="no-spicy">🌶️ 매운맛 절대 금지 (순한맛 전용)</option>
+            <option value="diet">🥗 다이어트 / 저칼로리 헬시 레시피</option>
+            <option value="vegan">🌿 채식(비건) 중심 조리</option>
+            <option value="kids">🧸 어린이도 좋아하는 달콤 담백 입맛</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div class="bg-slate-900/90 p-2.5 rounded-xl border border-slate-800 space-y-1.5">
+            <p class="text-xs font-bold text-slate-200">⏱️ 조리 시간 제한</p>
+            <select id="set-time-limit" onchange="syncGeneralSettings()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-200 outline-none">
+              <option value="none">제한 없음</option>
+              <option value="5min">⚡ 5분 컷 초스피드</option>
+              <option value="15min">🍳 15분 이내 자취생용</option>
+              <option value="60min">🍲 1시간 정성 풀코스</option>
+            </select>
+          </div>
+          <div class="bg-slate-900/90 p-2.5 rounded-xl border border-slate-800 space-y-1.5">
+            <p class="text-xs font-bold text-slate-200">⚖️ 계량 표기 방식</p>
+            <select id="set-unit-style" onchange="syncGeneralSettings()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-200 outline-none">
+              <option value="spoon">🥄 일반 숟가락/종이컵</option>
+              <option value="gram">🔬 정밀 그램(g) / ml</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Variety / Party Settings -->
+      <div class="space-y-2.5 bg-slate-950/60 p-3.5 rounded-2xl border border-pink-900/40">
+        <p class="text-xs font-bold text-pink-300 flex items-center space-x-1.5">
+          <span>🎉 예능 & 친구 내기 파티 설정</span>
+        </p>
+
+        <div class="flex items-center justify-between bg-slate-900/90 p-2.5 rounded-xl border border-slate-800">
+          <div>
+            <p class="text-xs font-bold text-amber-300">🎰 예능 벌칙 & 미션 룰렛 카드</p>
+            <p class="text-[10px] text-slate-400">결과 카드 하단에 랜덤 내기 벌칙/미션을 함께 출력!</p>
+          </div>
+          <input type="checkbox" id="set-penalty-roulette" onchange="syncGeneralSettings()" class="w-4 h-4 rounded accent-pink-500 cursor-pointer" />
+        </div>
+
+        <div class="flex items-center justify-between bg-slate-900/90 p-2.5 rounded-xl border border-slate-800">
+          <div>
+            <p class="text-xs font-bold text-cyan-300">🎲 가마솥 랜덤 돌발 이벤트</p>
+            <p class="text-[10px] text-slate-400">연성 중 랜덤 해프닝(불 조절 대참사·요정의 축복 등) 발생!</p>
+          </div>
+          <input type="checkbox" id="set-random-event" onchange="syncGeneralSettings()" class="w-4 h-4 rounded accent-cyan-500 cursor-pointer" />
+        </div>
+
+        <div class="flex items-center justify-between bg-slate-900/90 p-2.5 rounded-xl border border-slate-800">
+          <div>
+            <p class="text-xs font-bold text-orange-300">🍻 심야 술안주 / 해장 특화 모드</p>
+            <p class="text-[10px] text-slate-400">모든 요리를 기가 막힌 안주 또는 얼큰 해장식으로 강제 연성</p>
+          </div>
+          <input type="checkbox" id="set-pub-mode" onchange="syncGeneralSettings()" class="w-4 h-4 rounded accent-orange-500 cursor-pointer" />
+        </div>
+
+        <div class="bg-slate-900/90 p-2.5 rounded-xl border border-slate-800 space-y-1.5">
+          <p class="text-xs font-bold text-slate-200">🎨 가마솥 UI 컬러 테마</p>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-0.5">
+            <button onclick="applyUiTheme('purple')" id="theme-btn-purple" class="py-1.5 px-2 rounded-lg border border-purple-500 bg-purple-950/60 text-purple-200 text-[11px] font-bold">🔮 심연 보라</button>
+            <button onclick="applyUiTheme('gold')" id="theme-btn-gold" class="py-1.5 px-2 rounded-lg border border-slate-700 bg-slate-950 text-amber-300 text-[11px] font-bold">👑 황금 연금</button>
+            <button onclick="applyUiTheme('crimson')" id="theme-btn-crimson" class="py-1.5 px-2 rounded-lg border border-slate-700 bg-slate-950 text-rose-300 text-[11px] font-bold">🔥 지옥 용암</button>
+            <button onclick="applyUiTheme('emerald')" id="theme-btn-emerald" class="py-1.5 px-2 rounded-lg border border-slate-700 bg-slate-950 text-emerald-300 text-[11px] font-bold">🌿 숲의 마녀</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-1">
+        <button onclick="closeGeneralSettingsModal()" class="w-full py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white text-xs font-black rounded-xl transition-all shadow-lg">
+          설정 저장 후 닫기
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- API Configuration ---
+    const apiKey = ""; // Built-in preview system key
+
+    // --- State Manager ---
+    const state = {
+      ingredients: [],
+      customInput: '',
+      selectedStyle: 'secret',
+      selectedMana: 'medium',
+      selectedCritic: 'gourmet', // 'gourmet' | 'grandma'
+      isBrewing: false,
+      brewingStage: '',
+      resultRecipe: null,
+      recipeHistory: [],
+      activeTab: 'alchemy',
+      showHistoryDetail: null,
+      errorMsg: '',
+      userApiKey: '',
+      skipGoogleImage: false,
+      gameMode: 'solo', // 'solo' | 'battle'
+      battleTurn: 1, // 1 | 2
+      p1Data: null,
+      battleResult: null,
+      epicEffectsEnabled: true,
+      flashTimeoutId: null,
+      logoClickCount: 0,
+      logoClickTimer: null,
+      devSoloScoreEnabled: false,
+      devSoloScore: 500,
+      devSoloAdaptIngredients: true,
+      devP1ScoreEnabled: false,
+      devP1Score: 500,
+      devP2ScoreEnabled: false,
+      devP2Score: 95,
+      devBattleAdaptIngredients: true,
+      devExtremeCritic: false,
+      soundEnabled: true,
+      imageGenEnabled: true,
+      dietaryFilter: 'none',
+      timeLimit: 'none',
+      unitStyle: 'spoon',
+      penaltyRouletteEnabled: false,
+      randomEventEnabled: false,
+      pubModeEnabled: false,
+      criticTheme: 'default',
+      uiTheme: 'purple'
+    };
+
+    const RANDOM_CAULDRON_EVENTS = [
+      "🔥 [돌발 이벤트: 불 조절 대폭주!] 냄비 바닥이 살짝 눌어붙으면서 뜻밖의 불향과 스모키함이 강제 추가됐다!",
+      "🧚 [돌발 이벤트: 설탕 요정의 재채기!] 마지막 순간 달콤한 풍미가 예상보다 2배 더 진하게 배어들었다!",
+      "⚡ [돌발 이벤트: 번개 마력 낙뢰!] 초고온 순간 가열로 겉은 바삭하고 속은 촉촉한 겉바속촉 효과가 극대화됐다!",
+      "🌪️ [돌발 이벤트: 차원의 소용돌이!] 모든 재료가 완벽하게 유화되면서 소스의 농도가 기적처럼 걸쭉해졌다!",
+      "💧 [돌발 이벤트: 마녀의 눈물 한 방울!] 감칠맛과 짭조름한 밸런스가 소름 돋게 맞아떨어졌다!"
+    ];
+
+    const PARTY_PENALTIES = [
+      "☕ 커피 쏘기 당첨! (점수 250점 미만이면 오늘 커피는 이 사람이 쏜다!)",
+      "🍨 편의점 아이스크림 심부름! (가장 낮은 점수 받은 사람이 다녀오기)",
+      "🎤 10초 동안 이 요리 CF 모델처럼 감동적인 표정 연기하기!",
+      "🧹 오늘 설거지 및 뒷정리 당번 면제권 획득! (단, 200점 이상일 때만)",
+      "📸 완성된 레시피 제목을 가장 진지한 목소리로 낭독하기!",
+      "🥤 다음 라운드에서 상대방이 골라주는 재료 1개 무조건 포함시키기!",
+      "👏 전원 기립 박수 5초! (이번 연성자의 천재성을 찬양하라)"
+    ];
+
+    // --- Web Audio Synthesizer Sound Effects ---
+    function playMagicSound(type) {
+      if (!state.soundEnabled) return;
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const now = ctx.currentTime;
+
+        const playNote = (freq, startTime, duration, wave = 'sine', vol = 0.12) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = wave;
+          osc.frequency.setValueAtTime(freq, startTime);
+          gain.gain.setValueAtTime(vol, startTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(startTime);
+          osc.stop(startTime + duration);
+        };
+
+        if (type === 'start') {
+          playNote(330, now, 0.15, 'triangle', 0.1);
+          playNote(440, now + 0.08, 0.2, 'triangle', 0.12);
+        } else if (type === 'epic') {
+          // 전설/레전드/최상/초월 웅장한 팡파르
+          [523.25, 659.25, 783.99, 1046.5, 1318.5].forEach((f, idx) => {
+            playNote(f, now + idx * 0.09, 0.45, 'triangle', 0.15);
+          });
+        } else {
+          // 일반 완료 차임
+          playNote(523.25, now, 0.18, 'sine', 0.1);
+          playNote(659.25, now + 0.1, 0.25, 'sine', 0.12);
+        }
+      } catch (_) {}
+    }
+
+    // --- General Settings Controls ---
+    function openGeneralSettingsModal() {
+      document.getElementById('set-sound-enabled').checked = state.soundEnabled;
+      document.getElementById('set-image-enabled').checked = state.imageGenEnabled;
+      document.getElementById('set-dietary-filter').value = state.dietaryFilter;
+      document.getElementById('set-time-limit').value = state.timeLimit;
+      document.getElementById('set-unit-style').value = state.unitStyle;
+      document.getElementById('set-penalty-roulette').checked = state.penaltyRouletteEnabled;
+      document.getElementById('set-random-event').checked = state.randomEventEnabled;
+      document.getElementById('set-pub-mode').checked = state.pubModeEnabled;
+      updateThemeButtonsUI();
+      document.getElementById('general-settings-modal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeGeneralSettingsModal() {
+      syncGeneralSettings();
+      document.getElementById('general-settings-modal').classList.add('hidden');
+    }
+
+    function syncGeneralSettings() {
+      state.soundEnabled = document.getElementById('set-sound-enabled').checked;
+      state.imageGenEnabled = document.getElementById('set-image-enabled').checked;
+      state.dietaryFilter = document.getElementById('set-dietary-filter').value;
+      state.timeLimit = document.getElementById('set-time-limit').value;
+      state.unitStyle = document.getElementById('set-unit-style').value;
+      state.penaltyRouletteEnabled = document.getElementById('set-penalty-roulette').checked;
+      state.randomEventEnabled = document.getElementById('set-random-event').checked;
+      state.pubModeEnabled = document.getElementById('set-pub-mode').checked;
+    }
+
+    function applyUiTheme(themeName) {
+      state.uiTheme = themeName;
+      const body = document.body;
+      if (themeName === 'gold') {
+        body.className = 'min-h-screen bg-stone-950 text-amber-50 font-sans pb-16 antialiased selection:bg-amber-700 selection:text-amber-100 relative';
+      } else if (themeName === 'crimson') {
+        body.className = 'min-h-screen bg-neutral-950 text-rose-50 font-sans pb-16 antialiased selection:bg-rose-800 selection:text-rose-100 relative';
+      } else if (themeName === 'emerald') {
+        body.className = 'min-h-screen bg-teal-950 text-emerald-50 font-sans pb-16 antialiased selection:bg-emerald-800 selection:text-emerald-100 relative';
+      } else {
+        body.className = 'min-h-screen bg-slate-950 text-slate-100 font-sans pb-16 antialiased selection:bg-purple-800 selection:text-purple-100 relative';
+      }
+      updateThemeButtonsUI();
+    }
+
+    function updateThemeButtonsUI() {
+      ['purple', 'gold', 'crimson', 'emerald'].forEach(t => {
+        const btn = document.getElementById(`theme-btn-${t}`);
+        if (!btn) return;
+        if (state.uiTheme === t) {
+          btn.classList.add('ring-2', 'ring-white');
+        } else {
+          btn.classList.remove('ring-2', 'ring-white');
+        }
+      });
+    }
+
+    // --- Static Presets ---
+    const INGREDIENT_PRESETS = [
+      { name: '김치', emoji: '🥬', category: '기타' },
+      { name: '계란', emoji: '🥚', category: '단백질' },
+      { name: '양파', emoji: '🧅', category: '채소' },
+      { name: '돼지고기', emoji: '🥩', category: '단백질' },
+      { name: '스팸', emoji: '🥫', category: '단백질' },
+      { name: '두부', emoji: '⬜', category: '단백질' },
+      { name: '찬밥', emoji: '🍚', category: '탄수화물' },
+      { name: '치즈', emoji: '🧀', category: '기타' },
+      { name: '라면사리', emoji: '🍜', category: '탄수화물' },
+      { name: '마늘', emoji: '🧄', category: '채소' },
+      { name: '대파', emoji: '🥬', category: '채소' },
+      { name: '참치캔', emoji: '🐟', category: '단백질' },
+      { name: '식빵', emoji: '🍞', category: '탄수화물' },
+      { name: '감자', emoji: '🥔', category: '채소' },
+      { name: '우유', emoji: '🥛', category: '기타' }
+    ];
+
+    const STYLE_PRESETS = [
+      { id: 'stew', label: '마법의 국물/찌개', icon: '🍲' },
+      { id: 'fry', label: '차원의 볶음/구이', icon: '🍳' },
+      { id: 'baking', label: '연금술 오븐/베이킹', icon: '🍞' },
+      { id: 'snack', label: '요정의 간식/디저트', icon: '🍰' },
+      { id: 'secret', label: '심연의 비밀 레시피 (랜덤)', icon: '🔮' }
+    ];
+
+    const MANA_LEVELS = [
+      { id: 'normal', label: '🍚 일반 요리 (마나 넣지 않음)', desc: '판타지 연출 없이 현실에서 진짜 맛있게 해 먹는 정통 집밥 레시피' },
+      { id: 'easy', label: '초급 마법 (초간단)', desc: '마나 소모 적음 (15분 이내)' },
+      { id: 'medium', label: '중급 마법 (일반)', desc: '적당한 숙련도 필요 (30분 이내)' },
+      { id: 'hard', label: '상급 마법 (본격 요리)', desc: '강력한 요리 집중력 요함 (45분 이상)' }
+    ];
+
+    const CRITIC_PERSONAS = [
+      {
+        id: 'gourmet',
+        label: '거친 반말 미식가',
+        icon: '🤬',
+        desc: '매운맛 독설 반말 & 츤데레 극찬',
+        activeClass: 'bg-gradient-to-r from-rose-950/60 to-slate-900 border-rose-500 text-rose-200'
+      },
+      {
+        id: 'grandma',
+        label: '따뜻한 할머니',
+        icon: '👵',
+        desc: '점수가 낮아도 칭찬과 다정한 조언',
+        activeClass: 'bg-gradient-to-r from-amber-950/60 to-slate-900 border-amber-500 text-amber-200'
+      },
+      {
+        id: 'ramsay',
+        label: '고든 램지 빙의',
+        icon: '🔥',
+        desc: '"IT\'S RAW!! 당나귀야, 다시 해와!"',
+        activeClass: 'bg-gradient-to-r from-orange-950/60 to-slate-900 border-orange-500 text-orange-200'
+      },
+      {
+        id: 'elementary',
+        label: '초딩 입맛 심사위원',
+        icon: '🧒',
+        desc: '"으엑 야채 극혐! 치즈랑 케첩 더 줘!"',
+        activeClass: 'bg-gradient-to-r from-sky-950/60 to-slate-900 border-sky-400 text-sky-200'
+      },
+      {
+        id: 'baek',
+        label: '구수한 충청도 백셰프',
+        icon: '👨‍🍳',
+        desc: '"유레카! 이 집 장사해도 되겠슈~"',
+        activeClass: 'bg-gradient-to-r from-emerald-950/60 to-slate-900 border-emerald-500 text-emerald-200'
+      },
+      {
+        id: 'chuuni',
+        label: '중2병 암흑 대마왕',
+        icon: '😈',
+        desc: '"크큭... 내 흑염룡이 맛에 울부짖는다"',
+        activeClass: 'bg-gradient-to-r from-purple-950/70 to-slate-900 border-purple-400 text-purple-200'
+      },
+      {
+        id: 'joseon',
+        label: '조선시대 대령숙수',
+        icon: '👑',
+        desc: '"전하! 종묘사직을 울릴 맛이옵니다!"',
+        activeClass: 'bg-gradient-to-r from-yellow-950/60 to-slate-900 border-yellow-400 text-yellow-200'
+      }
+    ];
+
+    const bubblingQuotes = [
+      "비약을 젓는 중... 솥 안에서 신비한 향이 피어오릅니다.",
+      "요정 가루(설탕)와 깊은 숲의 눈물(간장)의 마법 비율 계산 중...",
+      "비밀 조리 도서관에서 최적의 원소 조합을 스캔하는 중...",
+      "요리의 정령을 소환하여 불꽃을 조율하는 중...",
+      "시각적 환영(마법 일러스트)을 생성하기 위해 도화지를 펴는 중..."
+    ];
+
+    // --- Helper Functions ---
+    const getTierColor = (tier) => {
+      switch (tier) {
+        case '초월': return 'tier-transcendent border-purple-200 text-white';
+        case '최상': return 'tier-rainbow border-white text-white';
+        case '레전드': return 'bg-gradient-to-r from-red-600 to-rose-600 border-red-400 text-red-50 shadow-red-500/40';
+        case '전설': return 'bg-gradient-to-r from-yellow-400 to-amber-500 border-yellow-200 text-slate-950 shadow-yellow-400/40';
+        case '영웅': return 'bg-gradient-to-r from-purple-600 to-violet-600 border-purple-400 text-purple-100 shadow-purple-500/30';
+        case '희귀': return 'bg-gradient-to-r from-blue-600 to-sky-500 border-blue-300 text-blue-50 shadow-blue-500/25';
+        case '우수': return 'bg-gradient-to-r from-emerald-600 to-green-500 border-emerald-300 text-emerald-50 shadow-emerald-500/25';
+        default: return 'bg-gradient-to-r from-slate-600 to-gray-700 border-slate-400 text-slate-200';
+      }
+    };
+
+    const callWithRetry = async (url, options, retries = 3, delay = 1000) => {
+      try {
+        const response = await fetch(url, options);
+        if (!response.ok) {
+          let errMsg = `HTTP 에러 발생! 상태 코드: ${response.status}`;
+          try {
+            const errData = await response.json();
+            if (errData && errData.error && errData.error.message) {
+              errMsg += `\n사유: ${errData.error.message}`;
+            }
+          } catch (_) {}
+          throw new Error(errMsg);
+        }
+        return await response.json();
+      } catch (error) {
+        if (retries > 0 && !String(error.message).includes('400') && !String(error.message).includes('404')) {
+          await new Promise(resolve => setTimeout(resolve, delay));
+          return callWithRetry(url, options, retries - 1, delay * 2);
+        }
+        throw error;
+      }
+    };
+
+    // --- LocalStorage History Helpers ---
+    function loadHistoryFromStorage() {
+      try {
+        const raw = localStorage.getItem('recipe_alchemist_history_v1');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            state.recipeHistory = parsed;
+          }
+        }
+      } catch (e) {
+        console.warn('레시피 북 불러오기 실패:', e);
+      }
+    }
+
+    function saveHistoryToStorage() {
+      try {
+        localStorage.setItem('recipe_alchemist_history_v1', JSON.stringify(state.recipeHistory));
+      } catch (e) {
+        try {
+          const trimmed = state.recipeHistory.slice(0, 15).map((item, i) => i > 3 ? { ...item, image: null } : item);
+          localStorage.setItem('recipe_alchemist_history_v1', JSON.stringify(trimmed));
+        } catch (_) {}
+      }
+    }
+
+    // --- API Key Fallback Helpers ---
+    function getActiveApiKey() {
+      let raw = "";
+      if (apiKey && apiKey !== "") {
+        raw = apiKey;
+      } else {
+        raw = state.userApiKey || localStorage.getItem('recipe_alchemist_key') || "";
+      }
+      return raw.trim().replace(/^["']|["']$/g, '').replace(/[^\x21-\x7E]/g, '');
+    }
+
+    function checkKeyStatus() {
+      const activeKey = getActiveApiKey();
+      const dot = document.getElementById('key-status-dot');
+      if (activeKey !== "") {
+        dot.className = "w-2 h-2 rounded-full bg-emerald-500 inline-block";
+        document.getElementById('key-indicator').title = "마력 주입 완료! 가마솥이 활성화되어 있습니다.";
+      } else {
+        dot.className = "w-2 h-2 rounded-full bg-red-500 inline-block animate-ping";
+        document.getElementById('key-indicator').title = "경고: 마력석(API Key) 설정이 누락되었습니다.";
+      }
+    }
+
+    function openKeyModal() {
+      const savedKey = localStorage.getItem('recipe_alchemist_key') || "";
+      document.getElementById('user-api-key').value = savedKey;
+      document.getElementById('key-modal').classList.remove('hidden');
+    }
+
+    function closeKeyModal() {
+      document.getElementById('key-modal').classList.add('hidden');
+    }
+
+    function saveApiKey() {
+      const rawVal = document.getElementById('user-api-key').value;
+      const val = rawVal.trim().replace(/^["']|["']$/g, '').replace(/[^\x21-\x7E]/g, '');
+      if (rawVal.trim() !== "" && val === "") {
+        showError("API 키는 영문자와 숫자, 기호로만 이루어져야 합니다. 한글이나 특수문자가 복사되지 않았는지 확인해주세요.");
+        return;
+      }
+      state.userApiKey = val;
+      if (val !== "") {
+        localStorage.setItem('recipe_alchemist_key', val);
+      } else {
+        localStorage.removeItem('recipe_alchemist_key');
+      }
+      checkKeyStatus();
+      closeKeyModal();
+    }
+
+    function toggleKeyVisibility() {
+      const input = document.getElementById('user-api-key');
+      const eye = document.getElementById('key-eye');
+      if (input.type === "password") {
+        input.type = "text";
+        eye.setAttribute('data-lucide', 'eye');
+      } else {
+        input.type = "password";
+        eye.setAttribute('data-lucide', 'eye-off');
+      }
+      lucide.createIcons();
+    }
+
+    // --- Core Navigation & Mode Controls ---
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      
+      const tabAlchemy = document.getElementById('tab-alchemy');
+      const tabHistory = document.getElementById('tab-history');
+      const viewAlchemy = document.getElementById('view-alchemy');
+      const viewHistory = document.getElementById('view-history');
+      const battleArena = document.getElementById('battle-arena');
+
+      if (tabId === 'alchemy') {
+        tabAlchemy.className = 'flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs md:text-sm font-medium transition-all bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow';
+        tabHistory.className = 'flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs md:text-sm font-medium transition-all text-slate-400 hover:text-white relative';
+        viewAlchemy.classList.remove('hidden');
+        viewHistory.classList.add('hidden');
+        if (state.gameMode === 'battle' && state.battleResult) {
+          battleArena.classList.remove('hidden');
+        }
+      } else {
+        tabAlchemy.className = 'flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs md:text-sm font-medium transition-all text-slate-400 hover:text-white';
+        tabHistory.className = 'flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs md:text-sm font-medium transition-all bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow relative';
+        viewAlchemy.classList.add('hidden');
+        battleArena.classList.add('hidden');
+        viewHistory.classList.remove('hidden');
+        renderHistory();
+      }
+    }
+
+    function toggleBattleMode() {
+      const nextMode = state.gameMode === 'solo' ? 'battle' : 'solo';
+      setGameMode(nextMode);
+    }
+
+    function setGameMode(mode) {
+      state.gameMode = mode;
+      const headerBtn = document.getElementById('header-battle-btn');
+      const headerLabel = document.getElementById('header-battle-label');
+      const soloIntro = document.getElementById('solo-intro-card');
+      const battleBanner = document.getElementById('battle-banner');
+      const battleArena = document.getElementById('battle-arena');
+
+      if (state.activeTab !== 'alchemy') {
+        switchTab('alchemy');
+      }
+
+      if (mode === 'solo') {
+        headerBtn.className = 'px-2.5 py-2 rounded-lg bg-slate-900 border border-purple-900/30 text-slate-300 hover:text-white hover:border-rose-500/50 transition-all flex items-center space-x-1.5 text-xs font-bold';
+        headerLabel.innerText = '1:1 배틀';
+        soloIntro.classList.remove('hidden');
+        battleBanner.classList.add('hidden');
+        battleArena.classList.add('hidden');
+        updateTransmuteButtonUI();
+      } else {
+        headerBtn.className = 'px-2.5 py-2 rounded-lg bg-gradient-to-r from-rose-600 to-amber-600 border border-rose-400 text-white shadow-lg shadow-rose-500/30 transition-all flex items-center space-x-1.5 text-xs font-bold';
+        headerLabel.innerText = '솔로 복귀';
+        soloIntro.classList.add('hidden');
+        battleBanner.classList.remove('hidden');
+        resetBattle();
+      }
+      lucide.createIcons();
+    }
+
+    function resetBattle() {
+      state.battleTurn = 1;
+      state.p1Data = null;
+      state.battleResult = null;
+      state.ingredients = [];
+      state.selectedStyle = 'secret';
+      state.selectedMana = 'medium';
+      document.getElementById('battle-arena').classList.add('hidden');
+      document.getElementById('p1-locked-notice').classList.add('hidden');
+      document.getElementById('recipe-card').classList.add('hidden');
+      document.getElementById('result-empty').classList.remove('hidden');
+      renderIngredients();
+      renderStylePresets();
+      renderManaLevels();
+      renderCriticPersonas();
+      updateBattleTurnUI();
+      updateTransmuteButtonUI();
+    }
+
+    function updateBattleTurnUI() {
+      const banner = document.getElementById('battle-banner');
+      const badge = document.getElementById('battle-turn-badge');
+      const guide = document.getElementById('battle-turn-guide');
+      const lockedNotice = document.getElementById('p1-locked-notice');
+
+      if (state.battleTurn === 1) {
+        banner.className = 'p-4 rounded-2xl border-2 border-blue-500/60 bg-gradient-to-r from-blue-950/60 via-slate-900 to-slate-900 shadow-lg space-y-3 animate-fadeIn';
+        badge.className = 'px-2.5 py-1 rounded-lg text-xs font-black bg-blue-600 text-white shadow';
+        badge.innerText = '🔵 PLAYER 1 턴';
+        guide.className = 'text-xs text-blue-200 font-semibold';
+        guide.innerText = '상대방이 보지 못하게 재료를 고르세요!';
+        lockedNotice.classList.add('hidden');
+      } else {
+        banner.className = 'p-4 rounded-2xl border-2 border-rose-500/60 bg-gradient-to-r from-rose-950/60 via-slate-900 to-slate-900 shadow-lg space-y-3 animate-fadeIn';
+        badge.className = 'px-2.5 py-1 rounded-lg text-xs font-black bg-rose-600 text-white shadow';
+        badge.innerText = '🔴 PLAYER 2 턴';
+        guide.className = 'text-xs text-rose-200 font-semibold';
+        guide.innerText = '이제 플레이어 2의 비밀 레시피를 완성하세요!';
+        if (state.p1Data) {
+          document.getElementById('p1-locked-name').innerText = state.p1Data.name;
+          document.getElementById('p1-locked-count').innerText = state.p1Data.ingredients.length;
+          lockedNotice.classList.remove('hidden');
+        }
+      }
+    }
+
+    function updateTransmuteButtonUI() {
+      const btn = document.getElementById('transmute-btn');
+      if (state.gameMode === 'solo') {
+        btn.className = 'w-full py-4 px-6 rounded-2xl font-bold text-base transition-all duration-300 flex items-center justify-center space-x-3 shadow-lg bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:from-purple-500 hover:to-amber-400 text-white shadow-purple-600/30 scale-100 hover:scale-[1.02] active:scale-95';
+        btn.innerHTML = `<i data-lucide="flame" class="w-5 h-5 animate-bounce"></i><span class="text-lg font-bold tracking-wider">요리 마법 대연성 시작하기</span>`;
+      } else if (state.battleTurn === 1) {
+        btn.className = 'w-full py-4 px-6 rounded-2xl font-bold text-base transition-all duration-300 flex items-center justify-center space-x-3 shadow-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-blue-600/30 scale-100 hover:scale-[1.02] active:scale-95';
+        btn.innerHTML = `<i data-lucide="lock" class="w-5 h-5"></i><span class="text-lg font-bold tracking-wider">P1 선택 봉인 & P2에게 턴 넘기기 👉</span>`;
+      } else {
+        btn.className = 'w-full py-4 px-6 rounded-2xl font-bold text-base transition-all duration-300 flex items-center justify-center space-x-3 shadow-lg bg-gradient-to-r from-rose-600 via-pink-600 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white shadow-rose-600/30 scale-100 hover:scale-[1.02] active:scale-95';
+        btn.innerHTML = `<i data-lucide="swords" class="w-5 h-5 animate-bounce"></i><span class="text-lg font-bold tracking-wider">⚔️ 배틀 개시 & 승패 판정하기!</span>`;
+      }
+      lucide.createIcons();
+    }
+
+    // --- Ingredient & Option Selection Handlers ---
+    function addCustomIngredient() {
+      const inputEl = document.getElementById('custom-input');
+      const trimmed = inputEl.value.trim();
+      if (!trimmed) return;
+      
+      if (state.ingredients.some(i => i.name === trimmed)) {
+        inputEl.value = '';
+        return;
+      }
+      
+      state.ingredients.push({ name: trimmed, emoji: '🧙', category: '직접 입력' });
+      inputEl.value = '';
+      renderIngredients();
+    }
+
+    function removeIngredient(name) {
+      state.ingredients = state.ingredients.filter(i => i.name !== name);
+      renderIngredients();
+    }
+
+    function togglePreset(name, emoji, category) {
+      const exists = state.ingredients.some(i => i.name === name);
+      if (exists) {
+        state.ingredients = state.ingredients.filter(i => i.name !== name);
+      } else {
+        state.ingredients.push({ name, emoji, category });
+      }
+      renderIngredients();
+    }
+
+    function selectStyle(id) {
+      state.selectedStyle = id;
+      renderStylePresets();
+    }
+
+    function selectMana(id) {
+      state.selectedMana = id;
+      renderManaLevels();
+    }
+
+    function selectCritic(id) {
+      state.selectedCritic = id;
+      state.criticTheme = ['gourmet', 'grandma'].includes(id) ? 'default' : id;
+      renderCriticPersonas();
+    }
+
+    function openConfirmModal() {
+      document.getElementById('confirm-modal').classList.remove('hidden');
+    }
+
+    function closeConfirmModal() {
+      document.getElementById('confirm-modal').classList.add('hidden');
+    }
+
+    function clearHistory() {
+      state.recipeHistory = [];
+      saveHistoryToStorage();
+      closeConfirmModal();
+      renderHistory();
+      updateHistoryBadge();
+    }
+
+    function openDetailModal(recipeId) {
+      const recipe = state.recipeHistory.find(r => r.id === recipeId);
+      if (!recipe) return;
+      
+      state.showHistoryDetail = recipe;
+      
+      const modalEl = document.getElementById('detail-modal');
+      modalEl.innerHTML = `
+        <div class="bg-slate-900 border border-purple-900/40 rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-scaleUp">
+          <!-- Modal Image Header -->
+          <div class="relative h-48 w-full bg-slate-950">
+            ${recipe.image ? `
+              <img src="${recipe.image}" alt="${recipe.title}" class="w-full h-full object-cover" />
+            ` : `
+              <div class="w-full h-full flex items-center justify-center bg-purple-950/20 text-purple-400">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10"><path d="M12 2v6"/><path d="M8 8h8"/><path d="M16 8l3.6 7.2a4 4 0 0 1-3.6 5.8H8a4 4 0 0 1-3.6-5.8L8 8"/><path d="M6 14h12"/></svg>
+              </div>
+            `}
+            <button
+              onclick="closeDetailModal()"
+              class="absolute top-4 right-4 bg-slate-900/80 hover:bg-slate-900 p-2 rounded-full border border-slate-800 text-slate-300 transition-colors"
+            >
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+            <div class="absolute top-4 left-4 flex items-center space-x-1.5">
+              <span class="px-3 py-1 rounded text-[10px] font-extrabold border ${getTierColor(recipe.tier)}">
+                ${recipe.tier} 등급
+              </span>
+              ${recipe.score !== undefined ? `
+                <span class="px-2.5 py-1 rounded text-[10px] font-black bg-slate-950/90 border border-slate-700 text-amber-300">
+                  ${recipe.score} / 500점
+                </span>
+              ` : ''}
+            </div>
+            <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-900 p-6 pt-12">
+              <h3 class="text-lg font-black text-white">${recipe.title}</h3>
+            </div>
+          </div>
+
+          <div class="p-6 space-y-5">
+            <p class="text-xs text-purple-300 italic pl-3 border-l-2 border-purple-500">
+              "${recipe.summary}"
+            </p>
+
+            <div class="flex justify-around border-y border-slate-800 py-2.5 text-center text-xs">
+              <div>
+                <span class="text-slate-500">종합 점수:</span> <strong class="text-amber-400">${recipe.score !== undefined ? recipe.score + '점' : '-'}</strong>
+              </div>
+              <div>
+                <span class="text-slate-500">마력 난이도:</span> <strong class="text-slate-300">${recipe.difficulty}</strong>
+              </div>
+              <div>
+                <span class="text-slate-500">연성 시간:</span> <strong class="text-slate-300">${recipe.cookTime}</strong>
+              </div>
+            </div>
+
+            <!-- Ingredients -->
+            <div class="space-y-1.5">
+              <h4 class="text-xs font-bold text-purple-400">연성 원소 (식재료)</h4>
+              <div class="bg-slate-950/40 rounded-xl p-3 border border-slate-800">
+                <ul class="grid grid-cols-2 gap-2 text-xs">
+                  ${recipe.ingredients.map(ing => `
+                    <li class="flex justify-between">
+                      <span class="text-slate-400">✨ ${ing.name}</span>
+                      <span class="text-purple-300 font-medium">${ing.amount}</span>
+                    </li>
+                  `).join('')}
+                </ul>
+              </div>
+            </div>
+
+            <!-- Steps -->
+            <div class="space-y-1.5">
+              <h4 class="text-xs font-bold text-purple-400">조리 절차</h4>
+              <ol class="space-y-2">
+                ${recipe.steps.map((step, idx) => `
+                  <li class="flex items-start text-xs bg-slate-950/20 p-2.5 rounded-lg border border-slate-800">
+                    <span class="bg-purple-950 border border-purple-500/20 text-purple-400 text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center shrink-0 mr-2">
+                      ${idx + 1}
+                    </span>
+                    <span class="text-slate-300 leading-relaxed">${step}</span>
+                  </li>
+                `).join('')}
+              </ol>
+            </div>
+
+            <!-- Secret Tip -->
+            <div class="p-3 bg-amber-950/20 border border-amber-900/50 rounded-xl text-xs">
+              <strong class="text-amber-400 block mb-1">🧙 마법사의 비법</strong>
+              <p class="text-slate-300 leading-relaxed">${recipe.secretTip}</p>
+            </div>
+
+            <!-- Critic Review -->
+            ${recipe.criticReview ? `
+              <div class="p-3.5 rounded-xl text-xs border ${recipe.criticType === 'grandma' ? 'bg-amber-950/25 border-amber-600/50' : (recipe.score >= 280 ? 'bg-emerald-950/25 border-emerald-700/50' : 'bg-rose-950/25 border-rose-700/50')}">
+                <strong class="${recipe.criticType === 'grandma' ? 'text-amber-300' : (recipe.score >= 280 ? 'text-emerald-400' : 'text-rose-400')} block mb-1">
+                  ${recipe.criticType === 'grandma' ? '👵 따뜻한 할머니의 다정한 한마디' : (recipe.score >= 280 ? '👨‍🍳 미식가의 극찬 심사평' : '🤬 냉혹한 미식가의 직설 심사평')}
+                </strong>
+                <p class="text-slate-200 leading-relaxed">"${recipe.criticReview}"</p>
+              </div>
+            ` : ''}
+          </div>
+
+          <!-- Modal Footer -->
+          <div class="p-4 bg-slate-950 border-t border-slate-800/80 rounded-b-3xl text-right">
+            <button
+              onclick="closeDetailModal()"
+              class="px-5 py-2 bg-purple-600 hover:bg-purple-500 text-white font-medium text-xs rounded-xl transition-all"
+            >
+              도서관으로 돌아가기
+            </button>
+          </div>
+        </div>
+      `;
+      modalEl.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeDetailModal() {
+      state.showHistoryDetail = null;
+      document.getElementById('detail-modal').classList.add('hidden');
+    }
+
+    function triggerGrandRevealEffect(tier) {
+      if (!state.epicEffectsEnabled) return;
+      const flash = document.getElementById('epic-flash-overlay');
+      const supremeBg = document.getElementById('supreme-bg-aura');
+      if (!flash) return;
+
+      if (state.flashTimeoutId) {
+        clearTimeout(state.flashTimeoutId);
+        state.flashTimeoutId = null;
+      }
+
+      if (tier === '전설') {
+        flash.innerHTML = `<div class="text-center animate-bounce"><p class="text-4xl md:text-6xl font-black text-slate-950 drop-shadow-[0_2px_15px_rgba(255,255,255,0.9)] tracking-widest">☀️ LEGENDARY ☀️</p><p class="text-lg md:text-2xl font-extrabold text-slate-900 mt-2">전설 등급 강림!</p></div>`;
+        flash.className = 'fixed inset-0 pointer-events-none z-[100] flex items-center justify-center bg-yellow-400 animate-flash-1s';
+        state.flashTimeoutId = setTimeout(() => {
+          flash.className = 'hidden';
+          flash.innerHTML = '';
+        }, 1000);
+      } else if (tier === '레전드') {
+        flash.innerHTML = `<div class="text-center animate-bounce"><p class="text-4xl md:text-6xl font-black text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.85)] tracking-widest">🔥 LEGEND 🔥</p><p class="text-lg md:text-2xl font-extrabold text-rose-100 mt-2">레전드 등급 강림!</p></div>`;
+        flash.className = 'fixed inset-0 pointer-events-none z-[100] flex items-center justify-center bg-red-600 animate-flash-2s';
+        document.body.classList.add('animate-shake');
+        setTimeout(() => document.body.classList.remove('animate-shake'), 600);
+        state.flashTimeoutId = setTimeout(() => {
+          flash.className = 'hidden';
+          flash.innerHTML = '';
+        }, 2000);
+      } else if (tier === '최상') {
+        flash.innerHTML = `<div class="text-center animate-bounce"><p class="text-5xl md:text-7xl font-black text-white drop-shadow-[0_4px_25px_rgba(0,0,0,0.9)] tracking-widest">🌈 SUPREME 🌈</p><p class="text-xl md:text-3xl font-black text-white drop-shadow mt-3">✨ 신의 영역! 최상 등급 탄생 ✨</p></div>`;
+        flash.className = 'fixed inset-0 pointer-events-none z-[100] flex items-center justify-center animate-flash-5s';
+        document.body.classList.add('animate-shake');
+        setTimeout(() => document.body.classList.remove('animate-shake'), 800);
+        if (supremeBg) {
+          supremeBg.className = 'fixed inset-0 pointer-events-none z-[5] supreme-persistent-bg transition-opacity duration-700';
+        }
+        state.flashTimeoutId = setTimeout(() => {
+          flash.className = 'hidden';
+          flash.innerHTML = '';
+        }, 5000);
+      } else if (tier === '초월') {
+        flash.innerHTML = `<div class="text-center animate-bounce"><p class="text-5xl md:text-7xl font-black text-purple-100 drop-shadow-[0_0_30px_rgba(216,180,254,1)] tracking-widest">🌌 TRANSCENDENT 🌌</p><p class="text-xl md:text-3xl font-black text-white drop-shadow mt-3">👑 500점 만점! 차원을 넘은 초월 등급 👑</p></div>`;
+        flash.className = 'fixed inset-0 pointer-events-none z-[100] flex items-center justify-center animate-flash-purple-5s';
+        document.body.classList.add('animate-shake');
+        setTimeout(() => document.body.classList.remove('animate-shake'), 900);
+        if (supremeBg) {
+          supremeBg.className = 'fixed inset-0 pointer-events-none z-[5] transcendent-persistent-bg transition-opacity duration-700';
+        }
+        state.flashTimeoutId = setTimeout(() => {
+          flash.className = 'hidden';
+          flash.innerHTML = '';
+        }, 5000);
+      }
+    }
+
+    function stopSupremePersistentEffect() {
+      const supremeBg = document.getElementById('supreme-bg-aura');
+      if (supremeBg) supremeBg.classList.add('hidden');
+      const flash = document.getElementById('epic-flash-overlay');
+      if (flash) {
+        flash.className = 'hidden';
+        flash.innerHTML = '';
+      }
+      if (state.flashTimeoutId) {
+        clearTimeout(state.flashTimeoutId);
+        state.flashTimeoutId = null;
+      }
+    }
+
+    function toggleEpicEffects() {
+      state.epicEffectsEnabled = !state.epicEffectsEnabled;
+      const btn = document.getElementById('header-effect-btn');
+      const label = document.getElementById('header-effect-label');
+      if (state.epicEffectsEnabled) {
+        btn.className = 'px-2.5 py-2 rounded-lg bg-purple-950/60 border border-purple-500/50 text-amber-300 hover:text-white transition-all flex items-center space-x-1 text-xs font-bold shadow-sm';
+        label.innerText = '연출 ON';
+      } else {
+        btn.className = 'px-2.5 py-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-500 hover:text-slate-300 transition-all flex items-center space-x-1 text-xs font-bold';
+        label.innerText = '연출 OFF';
+        stopSupremePersistentEffect();
+      }
+    }
+
+    // --- Secret Developer Modal Controls (5x Logo Click) ---
+    function getTierNameByScore(score) {
+      if (score <= 110) return '일반';
+      if (score <= 190) return '우수';
+      if (score <= 280) return '희귀';
+      if (score <= 389) return '영웅';
+      if (score <= 449) return '전설';
+      if (score <= 484) return '레전드';
+      if (score <= 499) return '최상';
+      return '초월';
+    }
+
+    function handleSecretLogoClick() {
+      state.logoClickCount += 1;
+      if (state.logoClickTimer) clearTimeout(state.logoClickTimer);
+      state.logoClickTimer = setTimeout(() => {
+        state.logoClickCount = 0;
+      }, 1500);
+
+      if (state.logoClickCount >= 5) {
+        state.logoClickCount = 0;
+        openDevModal();
+      }
+    }
+
+    function openDevModal() {
+      document.getElementById('dev-solo-score-enable').checked = state.devSoloScoreEnabled;
+      document.getElementById('dev-solo-score-range').value = state.devSoloScore;
+      document.getElementById('dev-solo-score-number').value = state.devSoloScore;
+      document.getElementById('dev-solo-tier-preview').innerText = getTierNameByScore(state.devSoloScore);
+      document.getElementById('dev-solo-adapt-ingredients').checked = state.devSoloAdaptIngredients;
+
+      document.getElementById('dev-p1-score-enable').checked = state.devP1ScoreEnabled;
+      document.getElementById('dev-p1-score-range').value = state.devP1Score;
+      document.getElementById('dev-p1-score-number').value = state.devP1Score;
+      document.getElementById('dev-p1-tier-preview').innerText = getTierNameByScore(state.devP1Score);
+
+      document.getElementById('dev-p2-score-enable').checked = state.devP2ScoreEnabled;
+      document.getElementById('dev-p2-score-range').value = state.devP2Score;
+      document.getElementById('dev-p2-score-number').value = state.devP2Score;
+      document.getElementById('dev-p2-tier-preview').innerText = getTierNameByScore(state.devP2Score);
+
+      document.getElementById('dev-battle-adapt-ingredients').checked = state.devBattleAdaptIngredients;
+      document.getElementById('dev-extreme-critic').checked = state.devExtremeCritic;
+
+      document.getElementById('dev-modal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeDevModal() {
+      syncDevSettings();
+      document.getElementById('dev-modal').classList.add('hidden');
+    }
+
+    function syncDevNumber(target, val) {
+      const clamped = Math.max(1, Math.min(500, Number(val) || 1));
+      document.getElementById(`dev-${target}-score-range`).value = clamped;
+      document.getElementById(`dev-${target}-score-number`).value = clamped;
+      document.getElementById(`dev-${target}-tier-preview`).innerText = getTierNameByScore(clamped);
+      syncDevSettings();
+    }
+
+    function syncDevSettings() {
+      state.devSoloScoreEnabled = document.getElementById('dev-solo-score-enable').checked;
+      state.devSoloScore = Math.max(1, Math.min(500, Number(document.getElementById('dev-solo-score-number').value) || 500));
+      state.devSoloAdaptIngredients = document.getElementById('dev-solo-adapt-ingredients').checked;
+
+      state.devP1ScoreEnabled = document.getElementById('dev-p1-score-enable').checked;
+      state.devP1Score = Math.max(1, Math.min(500, Number(document.getElementById('dev-p1-score-number').value) || 500));
+
+      state.devP2ScoreEnabled = document.getElementById('dev-p2-score-enable').checked;
+      state.devP2Score = Math.max(1, Math.min(500, Number(document.getElementById('dev-p2-score-number').value) || 95));
+
+      state.devBattleAdaptIngredients = document.getElementById('dev-battle-adapt-ingredients').checked;
+      state.devExtremeCritic = document.getElementById('dev-extreme-critic').checked;
+    }
+
+    function injectChaosIngredients() {
+      const chaosPool = [
+        { name: '민트초코 아이스크림', emoji: '🍦', category: '치트' },
+        { name: '불닭볶음면 소스', emoji: '🔥', category: '치트' },
+        { name: '마시멜로', emoji: '☁️', category: '치트' },
+        { name: '청양고추', emoji: '🌶️', category: '치트' },
+        { name: '바나나우유', emoji: '🍌', category: '치트' },
+        { name: '김치', emoji: '🥬', category: '치트' },
+        { name: '고르곤졸라 치즈', emoji: '🧀', category: '치트' },
+        { name: '에스프레소 샷', emoji: '☕', category: '치트' }
+      ];
+      const shuffled = [...chaosPool].sort(() => Math.random() - 0.5).slice(0, 4);
+      state.ingredients = shuffled;
+      renderIngredients();
+      closeDevModal();
+    }
+
+    function injectGourmetIngredients() {
+      state.ingredients = [
+        { name: '된장', emoji: '🤎', category: '치트' },
+        { name: '다크초콜릿', emoji: '🍫', category: '치트' },
+        { name: '통삼겹살', emoji: '🥓', category: '치트' },
+        { name: '사과', emoji: '🍎', category: '치트' }
+      ];
+      renderIngredients();
+      closeDevModal();
+    }
+
+    function testDevFx(tier) {
+      closeDevModal();
+      if (!state.epicEffectsEnabled) {
+        toggleEpicEffects();
+      }
+      triggerGrandRevealEffect(tier);
+    }
+
+    function resetDevOverrides() {
+      state.devSoloScoreEnabled = false;
+      state.devP1ScoreEnabled = false;
+      state.devP2ScoreEnabled = false;
+      state.devSoloAdaptIngredients = true;
+      state.devBattleAdaptIngredients = true;
+      state.devExtremeCritic = false;
+      openDevModal();
+    }
+
+    // --- Gemini & Imagen API Transmutation Logic ---
+    async function handleTransmute() {
+      if (state.ingredients.length === 0) {
+        showError("마법 솥에 최소 하나의 재료는 넣어야 연금술이 시작됩니다!");
+        return;
+      }
+
+      // 다음 음식 연성을 시작할 때 기존의 무지개/보라색 지속 화면 효과 중지
+      stopSupremePersistentEffect();
+      playMagicSound('start');
+
+      // 배틀 모드 Player 1 턴 저장 및 턴 전환 처리
+      if (state.gameMode === 'battle' && state.battleTurn === 1) {
+        hideError();
+        const p1Name = document.getElementById('p1-name-input').value.trim() || '플레이어 1';
+        state.p1Data = {
+          name: p1Name,
+          ingredients: [...state.ingredients],
+          style: state.selectedStyle,
+          mana: state.selectedMana,
+          critic: state.selectedCritic
+        };
+        state.battleTurn = 2;
+        state.ingredients = [];
+        state.selectedStyle = 'secret';
+        state.selectedMana = 'medium';
+        renderIngredients();
+        renderStylePresets();
+        renderManaLevels();
+        renderCriticPersonas();
+        updateBattleTurnUI();
+        updateTransmuteButtonUI();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
+      const activeKey = getActiveApiKey();
+      if (!activeKey || activeKey === "") {
+        openKeyModal();
+        showError("마력 결정을 가동하기 위해 마력 동력원(Gemini API Key) 주입이 선행되어야 합니다.");
+        return;
+      }
+      const cleanKey = encodeURIComponent(activeKey);
+
+      if (state.gameMode === 'battle' && state.battleTurn === 2) {
+        await handleBattleJudgement(activeKey, cleanKey);
+        return;
+      }
+
+      hideError();
+      toggleBrewingState(true);
+
+      const bubblingQuotesList = [...bubblingQuotes];
+      let quoteIdx = 0;
+      const quoteEl = document.getElementById('brewing-quote-text');
+      quoteEl.innerText = bubblingQuotesList[0];
+
+      const quoteInterval = setInterval(() => {
+        quoteIdx = (quoteIdx + 1) % bubblingQuotesList.length;
+        quoteEl.innerText = bubblingQuotesList[quoteIdx];
+      }, 2800);
+
+      try {
+        const ingredientNames = state.ingredients.map(i => i.name).join(', ');
+        const styleLabel = STYLE_PRESETS.find(s => s.id === state.selectedStyle)?.label || '비밀 레시피';
+        const manaLabel = MANA_LEVELS.find(m => m.id === state.selectedMana)?.label || '중급';
+        const isNormalCooking = state.selectedMana === 'normal';
+        const isGrandma = state.selectedCritic === 'grandma';
+
+        // 비밀 설정창 솔로 점수 조작 여부 확인 (버그판: 기본 무조건 500점 고정)
+        const forcedScorePreview = state.devSoloScoreEnabled ? state.devSoloScore : 500;
+        const forcedTierPreview = forcedScorePreview !== null ? getTierNameByScore(forcedScorePreview) : null;
+
+        const overrideDirective = forcedScorePreview !== null
+          ? `\n[★중요 특별 연출 지시★]
+이번 요리의 최종 점수는 무조건 **${forcedScorePreview}점 (${forcedTierPreview} 등급)**으로 확정되었습니다!
+1. score는 반드시 ${forcedScorePreview}로, tier는 "${forcedTierPreview}"로 출력하세요.
+2. ${state.devSoloAdaptIngredients
+  ? `사용자가 넣은 기본 재료([${ingredientNames}])를 베이스로 하되, **${forcedScorePreview}점 (${forcedTierPreview} 등급)에 걸맞은 수준이 되도록** 요리 이름, 재료의 활용법/계량(ingredients), 조리 비법을 ${forcedScorePreview === 500 ? '인류의 미식 역사를 새로 쓰는 신화적 초월 걸작' : forcedScorePreview >= 281 ? '소름 돋는 천재적 발상과 황금 비율의 미식 걸작' : forcedScorePreview >= 191 ? '꽤 신선하고 매력적인 아이디어 요리' : '단조롭거나 엉성한 실패작'}처럼 자연스럽게 맞춰서 창작하세요!`
+  : `사용자가 넣은 원래 재료([${ingredientNames}])와 정직한 계량을 그대로 유지하되, 점수는 반드시 ${forcedScorePreview}점으로 판정하세요!`}
+3. 심사평(criticReview) 역시 반드시 **${forcedScorePreview}점 (${forcedTierPreview} 등급)**에 100% 어울리는 톤으로 작성하세요!`
+          : '';
+
+        const extremeToneBoost = state.devExtremeCritic
+          ? `\n[🔥심사위원 10배 폭주 모드 발동🔥] 심사위원의 감정과 말투를 평소보다 10배 과장되고 극단적으로 표현하세요! 할머니라면 눈물을 펑펑 흘리며 주접을 떨거나 다정한 잔소리를 폭풍처럼 쏟아내고, 미식가라면 예술적 경외감에 무릎을 꿇거나 피도 눈물도 없는 전설적인 독설을 날리세요!`
+          : '';
+
+        const cookingModeRule = isNormalCooking
+          ? `[일반 요리 모드 활성화 - 마나 미사용]
+1. 판타지 마법 용어(비약, 스펠, 룬, 심연 등)를 완전히 배제하고, 실제 한식/양식/가정식 요리책에 나올 법한 현실적이고 먹음직스러운 정통 요리 이름과 조리법으로 작성하세요.
+2. [채점 기준 - 일반 요리 모드 전용 (1~500점 만점)]
+   - 재료를 1개만 넣은 경우 단조로우므로 최대 180점(우수 등급) 이하로 제한합니다.
+   - 2개 이상의 일상적이고 정통적인 집밥 조합(예: 김치+돼지고기, 스팸+계란, 두부+김치, 감자+양파 등)일수록 280~480점대의 높은 점수를 후하게 주세요!`
+          : `[연금술 요리 모드 활성화 - 극악 난이도 창의성 심사]
+1. 판타지 요리 연금술사 컨셉을 살려 독창적인 레시피를 창조하세요.
+2. [채점 기준 - 연금술 모드 전용 (1~500점 만점)]
+   - 경고 1 (단일 재료 금지): 재료를 1개만 넣은 경우 조합 자체가 성립하지 않으므로 **무조건 1~80점(일반 등급)**만 부여하세요!
+   - 경고 2 (재료 2개 제한): 재료가 2개뿐이면 복합적인 풍미가 부족하므로 **절대 250점을 넘기지 마세요(최대 희귀 등급까지 가능, 영웅 이상 절대 금지)**!
+   - 경고 3 (평범한 조합 엄벌): 냉장고에 흔한 식재료끼리의 무난한 조합(김치+돼지고기, 스팸+계란, 라면+치즈, 참치+김치, 계란+치즈, 식빵+우유, 감자+양파 등 현실에서 흔히 볼 수 있는 모든 조합)은 창의성이 0점이므로 **무조건 20~140점대(일반~우수 등급)**만 부여하세요!
+   - 괴식이나 상극 잡탕은 **1~70점(일반 등급)**을 부여하세요.
+   - 오직 3개 이상의 의외의 재료(상상하기 힘든 반전 식재료 조합)가 조리 스타일(${styleLabel})과 소름 돋게 맞아떨어지는 기적의 발상일 때만 281~500점(영웅~초월 등급)을 부여하세요!`;
+
+        const criticInstruction = isGrandma
+          ? `당신은 손주들을 세상에서 제일 아끼는 '따뜻하고 인자한 시골 할머니' 심사위원입니다. 점수가 낮게 나오더라도 절대 화내거나 독설을 하지 말고, "아이고 우리 강아지, 요거 만들려고 애썼네~ 그래도 정성이 갸륵하다!"처럼 다정하게 칭찬해주면서 맛이 더 좋아질 수 있는 따뜻한 요리 조언을 2~3문장으로 들려주세요.`
+          : `당신은 입이 거칠고 매운맛 독설을 퍼붓는 '반말 미식가' 심사위원입니다. 반드시 존댓말을 일절 쓰지 말고 거친 반말("~냐?", "~해라", "~잖아", "어휴")만 사용하세요! 280점 미만일 때는 "야, 이걸 지금 음식이라고 내온 거냐? 뻔해 빠져서 하품이 나오네. 가마솥 닦고 다시 해와!"처럼 자비 없는 뼈 때리는 반말 독설을 날리고, 280점 이상일 때는 "어라...? 너 꽤 치잖아? 인정하기 싫은데 이 맛은 진짜 미쳤어."처럼 츤데레 반말 극찬을 2~3문장으로 남기세요.`;
+
+        const criticThemeOverride = state.criticTheme === 'ramsay'
+          ? `\n[★예능 심사위원 컨셉: 고든 램지 빙의 반말★] 심사평(criticReview)을 반드시 고든 램지가 극대노하거나 감탄하는 거친 반말("IT'S RAW!! 생고기잖아 이 당나귀야!", "어디서 이런 쓰레기 같은 조합을 가져온 거야!", "빌어먹을, 이건 예술이야!") 말투로 작성하세요!`
+          : state.criticTheme === 'elementary'
+            ? `\n[★예능 심사위원 컨셉: 초딩 입맛 심사위원 반말★] 심사평(criticReview)을 반드시 10살 초등학생 반말("으엑 야채 냄새 극혐이야!", "치즈랑 케첩 더 뿌렸으면 500점 줬을 텐데 ㅋ", "우와 이거 완전 내 스타일! 또 해줘!") 말투로 작성하세요!`
+            : state.criticTheme === 'baek'
+              ? `\n[★예능 심사위원 컨셉: 구수한 충청도 백셰프★] 심사평(criticReview)을 반드시 구수한 충청도 사투리("~유", "유레카!", "이 집 장사해도 되겠슈", "설탕 좀 더 넣었으면 딱인디...") 말투로 실감 나게 작성하세요!`
+              : state.criticTheme === 'chuuni'
+                ? `\n[★예능 심사위원 컨셉: 중2병 암흑 대마왕★] 심사평(criticReview)을 반드시 "크큭... 내 왼손의 흑염룡이...", "심연의 맛", "필멸자여" 같은 극단적인 중2병 대마왕 말투로 작성하세요!`
+                : state.criticTheme === 'joseon'
+                  ? `\n[★예능 심사위원 컨셉: 조선시대 수라간 대령숙수★] 심사평(criticReview)을 반드시 "전하! 통촉하여 주시옵소서!", "종묘사직을 울릴 맛", "어명에 따라 진상하겠사옵니다" 같은 사극 대령숙수 말투로 작성하세요!`
+                  : '';
+
+        const dietaryRule = state.dietaryFilter === 'no-spicy'
+          ? `\n[식단 제한] 고춧가루, 청양고추, 불닭소스 등 매운 양념을 배제하거나 순한맛으로 중화한 레시피로 작성하세요.`
+          : state.dietaryFilter === 'diet'
+            ? `\n[식단 제한] 기름과 설탕을 최소화한 저칼로리 다이어트 건강식 조리법으로 작성하세요.`
+            : state.dietaryFilter === 'vegan'
+              ? `\n[식단 제한] 육류나 동물성 재료 없이 채소/식물성 위주로 건강한 채식 조리법이 되도록 작성하세요.`
+              : state.dietaryFilter === 'kids'
+                ? `\n[식단 제한] 어린아이도 맵지 않고 맛있게 먹을 수 있는 달콤 담백한 스타일로 작성하세요.`
+                : '';
+
+        const timeRule = state.timeLimit === '5min'
+          ? `\n[조리 시간 제한] 전자레인지나 초고속 팬 조리만으로 반드시 '5분 이내'에 완성할 수 있는 초간단 조리법으로 작성하세요.`
+          : state.timeLimit === '15min'
+            ? `\n[조리 시간 제한] 자취생도 뚝딱 만들 수 있게 반드시 '15분 이내'에 완성되는 조리법으로 작성하세요.`
+            : state.timeLimit === '60min'
+              ? `\n[조리 시간 제한] 푹 끓이고 뜸 들이는 '1시간 이상'의 정성 가득한 풀코스 조리법으로 작성하세요.`
+              : '';
+
+        const unitRule = state.unitStyle === 'gram'
+          ? `\n[계량 단위] 모든 재료의 amount를 반드시 정밀한 그램(g)과 밀리리터(ml) 단위(예: '120g', '15ml')로 표기하세요.`
+          : `\n[계량 단위] 모든 재료의 amount를 이해하기 쉬운 숟가락, 종이컵, 개 단위(예: '1큰술', '1/2컵')로 표기하세요.`;
+
+        const pubRule = state.pubModeEnabled
+          ? `\n[🍻심야 술안주/해장 특화 모드] 이 요리를 맥주·소주와 기가 막히게 어울리는 극강의 야식 술안주 또는 속이 확 풀리는 해장 요리로 컨셉을 잡아 작성하세요!`
+          : '';
+
+        const eventText = state.randomEventEnabled
+          ? RANDOM_CAULDRON_EVENTS[Math.floor(Math.random() * RANDOM_CAULDRON_EVENTS.length)]
+          : null;
+        const eventRule = eventText
+          ? `\n[🎲돌발 해프닝 발생] 조리 도중 다음 돌발 상황이 발생했습니다: "${eventText}". 이 돌발 상황을 조리 과정(steps)과 심사평(criticReview)에 자연스럽게 반영하세요!`
+          : '';
+
+        const systemPrompt = `당신은 요리 심사위원입니다. ${cookingModeRule}\n${criticInstruction}${criticThemeOverride}${dietaryRule}${timeRule}${unitRule}${pubRule}${eventRule}${overrideDirective}${extremeToneBoost}`;
+
+        const userQuery = `
+          내가 가진 재료: [${ingredientNames}]
+          원하는 요리 갈래: ${styleLabel}
+          요리 모드/강도: ${manaLabel}
+
+          위 조건들에 딱 맞는 한글 요리 레시피를 창조하고 1~500점 만점으로 엄격하게 채점해줘. 반드시 다음 JSON 구조를 완벽하게 유지해야 해.
+          {
+            "title": "요리 명칭",
+            "score": 1부터 500 사이의 정수,
+            "tier": "점수 구간에 맞는 등급 (1~110: 일반, 111~190: 우수, 191~280: 희귀, 281~389: 영웅, 390~449: 전설, 450~484: 레전드, 485~499: 최상, 500: 초월 중 하나)",
+            "difficulty": "요리 난이도 (초급, 중급, 고급 중 하나)",
+            "cookTime": "예상 조리 시간 (예: '20분')",
+            "summary": "이 요리에 대한 매력적인 한 줄 설명",
+            "ingredients": [
+              {"name": "재료명", "amount": "계량 수량 (예: '1/2개', '1큰술')"}
+            ],
+            "steps": [
+              "1단계 조리법 설명 (따라 하기 쉽고 맛있게)",
+              "2단계 조리법 설명",
+              "3단계 조리법 설명"
+            ],
+            "secretTip": "맛을 한층 더 끌어올리는 요리 꿀팁",
+            "criticReview": "심사위원의 최종 평론",
+            "imagePrompt": "이 요리의 완성 샷을 설명하는 고품질 푸드 스타일링 영어 프롬프트. 밝고 먹음직스러운 실제 고화질 음식 사진 묘사를 영어로 작성. (영어 30단어 내외)"
+          }
+        `;
+
+        const textUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${cleanKey}`;
+        const textPayload = {
+          contents: [{ parts: [{ text: userQuery }] }],
+          systemInstruction: { parts: [{ text: systemPrompt }] },
+          generationConfig: {
+            responseMimeType: "application/json",
+            responseSchema: {
+              type: "OBJECT",
+              properties: {
+                title: { type: "STRING" },
+                score: { type: "INTEGER" },
+                tier: { type: "STRING" },
+                difficulty: { type: "STRING" },
+                cookTime: { type: "STRING" },
+                summary: { type: "STRING" },
+                ingredients: {
+                  type: "ARRAY",
+                  items: {
+                    type: "OBJECT",
+                    properties: {
+                      name: { type: "STRING" },
+                      amount: { type: "STRING" }
+                    },
+                    required: ["name", "amount"]
+                  }
+                },
+                steps: {
+                  type: "ARRAY",
+                  items: { type: "STRING" }
+                },
+                secretTip: { type: "STRING" },
+                criticReview: { type: "STRING" },
+                imagePrompt: { type: "STRING" }
+              },
+              required: ["title", "score", "tier", "difficulty", "cookTime", "summary", "ingredients", "steps", "secretTip", "criticReview", "imagePrompt"]
+            }
+          }
+        };
+
+        const recipeResult = await callWithRetry(textUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(textPayload)
+        });
+
+        const parsedRecipe = JSON.parse(recipeResult.candidates?.[0]?.content?.parts?.[0]?.text || "{}");
+
+        // 점수 구간에 따른 등급 보정 (버그판: 무조건 500점 초월 등급 고정)
+        let numScore = forcedScorePreview !== null ? forcedScorePreview : 500;
+
+        parsedRecipe.score = numScore;
+        parsedRecipe.tier = getTierNameByScore(numScore);
+
+        const recipeId = Date.now();
+        const penaltyText = state.penaltyRouletteEnabled
+          ? PARTY_PENALTIES[Math.floor(Math.random() * PARTY_PENALTIES.length)]
+          : null;
+
+        const initialRecipe = {
+          ...parsedRecipe,
+          id: recipeId,
+          criticType: state.selectedCritic,
+          criticTheme: state.criticTheme,
+          penaltyText,
+          eventText,
+          isNormalCooking,
+          image: null,
+          isImageLoading: state.imageGenEnabled,
+          imageErrorReason: state.imageGenEnabled ? "" : "설정에서 이미지 자동 생성 OFF됨",
+          createdDate: new Date().toLocaleDateString('ko-KR', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          })
+        };
+
+        state.resultRecipe = initialRecipe;
+        state.recipeHistory.unshift(initialRecipe);
+        saveHistoryToStorage();
+
+        renderRecipeShowcase(initialRecipe);
+        updateHistoryBadge();
+        if (['전설', '레전드', '최상', '초월'].includes(initialRecipe.tier)) {
+          playMagicSound('epic');
+        } else {
+          playMagicSound('done');
+        }
+        triggerGrandRevealEffect(initialRecipe.tier);
+
+        // 비동기 이미지 생성 (설정이 켜져 있을 때만 실행)
+        if (state.imageGenEnabled) {
+          generateRecipeImageAsync(recipeId, cleanKey, parsedRecipe.imagePrompt);
+        }
+
+      } catch (err) {
+        console.error(err);
+        const errText = String(err.message || err);
+        if (errText.includes('API key not valid') || errText.includes('API_KEY_INVALID') || errText.includes('400')) {
+          openKeyModal();
+          showError("입력된 API 키가 유효하지 않습니다!\n\n상단 열쇠(🔑) 창에서 Google AI Studio(aistudio.google.com)의 유효한 'AIza...' 키를 다시 입력한 뒤 '마력석 박기'를 눌러주세요.");
+        } else {
+          showError(`연금 가마솥 마나 역류 발생!\n\n상세 오류 내용:\n${errText}\n\n도움말: 구글 AI 스튜디오에서 발급받은 마력 키(API Key)가 정확한지 확인해 주세요.`);
+        }
+      } finally {
+        clearInterval(quoteInterval);
+        toggleBrewingState(false);
+      }
+    }
+
+    async function handleBattleJudgement(activeKey, cleanKey) {
+      const p1 = state.p1Data;
+      const p2Name = document.getElementById('p2-name-input').value.trim() || '플레이어 2';
+      const p2 = {
+        name: p2Name,
+        ingredients: [...state.ingredients],
+        style: state.selectedStyle,
+        mana: state.selectedMana,
+        critic: state.selectedCritic
+      };
+
+      hideError();
+      toggleBrewingState(true);
+      document.getElementById('battle-arena').classList.add('hidden');
+
+      const quoteEl = document.getElementById('brewing-quote-text');
+      quoteEl.innerText = `⚔️ ${p1.name} vs ${p2.name}! 두 플레이어의 요리를 동시에 완성하고 심사하는 중...`;
+
+      try {
+        const p1Ings = p1.ingredients.map(i => i.name).join(', ');
+        const p1Style = STYLE_PRESETS.find(s => s.id === p1.style)?.label || '비밀 레시피';
+        const p1Mana = MANA_LEVELS.find(m => m.id === p1.mana)?.label || '중급';
+        const p1IsNormal = p1.mana === 'normal';
+        const p1IsGrandma = p1.critic === 'grandma';
+
+        const p2Ings = p2.ingredients.map(i => i.name).join(', ');
+        const p2Style = STYLE_PRESETS.find(s => s.id === p2.style)?.label || '비밀 레시피';
+        const p2Mana = MANA_LEVELS.find(m => m.id === p2.mana)?.label || '중급';
+        const p2IsNormal = p2.mana === 'normal';
+        const p2IsGrandma = p2.critic === 'grandma';
+
+        const p1ForcedScore = state.devP1ScoreEnabled ? state.devP1Score : 500;
+        const p2ForcedScore = state.devP2ScoreEnabled ? state.devP2Score : 500;
+
+        const getBattleOverrideHint = (pLabel, pName, forcedScore) => {
+          if (forcedScore === null) return '';
+          const t = getTierNameByScore(forcedScore);
+          const adaptRule = state.devBattleAdaptIngredients
+            ? `${pName}의 요리 이름, 재료 활용/계량(ingredients), 조리법까지 모두 이 ${forcedScore}점(${t} 등급) 수준에 걸맞은 걸작(또는 실패작)으로 자연스럽게 맞춰서 창작하세요!`
+            : `${pName}이 넣은 원래 재료와 계량을 그대로 유지한 채 점수만 ${forcedScore}점으로 판정하세요!`;
+          return `\n[★${pLabel}(${pName}) 특별 연출 지시★] ${pName}의 점수는 무조건 **${forcedScore}점 (${t} 등급)**으로 확정되었습니다! ${adaptRule} 심사평(criticReview)과 최종 승패 판정(battleVerdict) 역시 이 점수 결과에 100% 어울리게 작성하세요!`;
+        };
+
+        const p1OverrideText = getBattleOverrideHint('Player 1', p1.name, p1ForcedScore);
+        const p2OverrideText = getBattleOverrideHint('Player 2', p2.name, p2ForcedScore);
+        const battleExtremeBoost = state.devExtremeCritic
+          ? `\n[🔥심사위원 10배 폭주 모드 발동🔥] 두 플레이어의 심사평과 최종 승패 판정(battleVerdict)을 평소보다 10배 더 극적이고 과장된 예능감/광기 넘치는 리액션으로 작성하세요!`
+          : '';
+
+        const systemPrompt = `당신은 요리 배틀 아레나의 공정하고 냉철한 심판관입니다. 두 플레이어(P1, P2)의 요리를 각각 창조하고 1~500점 만점으로 채점한 뒤 승패를 판정하세요.
+[채점 및 평론 규칙 - 1~500점 만점]
+1. 재료를 1개만 넣은 플레이어: 조합이 단조로우므로 '일반 요리'는 최대 180점, '마법 모드'는 무조건 1~80점(일반 등급)으로 제한하세요!
+2. '일반 요리 (마나 넣지 않음)'를 선택한 플레이어: 판타지 용어 없이 현실적인 정통 요리 이름과 조리법으로 작성하며, 2개 이상의 일상적이고 정통적인 집밥 조합일수록 280~480점대의 높은 점수를 후하게 주세요!
+3. '마법(초급/중급/상급)'을 선택한 플레이어: 판타지 연금술 컨셉으로 작성하되, 재료가 2개뿐이면 최대 250점(희귀)까지만 허용하고, 냉장고에 흔한 식재료끼리의 평범한 조합(김치+돼지고기, 스팸+계란, 라면+치즈, 참치+김치, 계란+치즈 등)은 창의성이 부족하므로 **무조건 20~140점대(일반~우수 등급)**만 부여하세요! 오직 3개 이상의 기발한 반전 미식과 조리 스타일의 조화가 소름 돋게 뛰어날 때만 281~500점(영웅~초월)을 부여하세요!
+4. 각 플레이어의 심사위원 성향('따뜻한 할머니'인 경우 점수가 낮아도 무조건 다정한 칭찬과 따뜻한 조언, '거친 반말 미식가'인 경우 존댓말 없이 거칠고 매운맛 반말 독설/츤데레 극찬)을 개별 criticReview에 정확히 반영하세요.${p1OverrideText}${p2OverrideText}${battleExtremeBoost}`;
+        const battleQuery = `
+          [Player 1: ${p1.name}]
+          - 재료: [${p1Ings}]
+          - 요리 스타일: ${p1Style}
+          - 요리 모드/강도: ${p1Mana} (${p1IsNormal ? '일반 요리 모드: 일상 정통 조합에 고득점 부여' : '연금술 모드: 평범한 냉장고 재료 조합은 무조건 20~140점대로 빡빡하게 제한, 3개 이상의 기발한 반전 조합만 281~500점 부여'})
+          - 심사위원 성향: ${p1IsGrandma ? '따뜻한 할머니 (점수가 낮아도 칭찬과 따뜻한 조언)' : '냉혹한 미식가'}
+
+          [Player 2: ${p2.name}]
+          - 재료: [${p2Ings}]
+          - 요리 스타일: ${p2Style}
+          - 요리 모드/강도: ${p2Mana} (${p2IsNormal ? '일반 요리 모드: 일상 정통 조합에 고득점 부여' : '연금술 모드: 평범한 냉장고 재료 조합은 무조건 20~140점대로 빡빡하게 제한, 3개 이상의 기발한 반전 조합만 281~500점 부여'})
+          - 심사위원 성향: ${p2IsGrandma ? '따뜻한 할머니 (점수가 낮아도 칭찬과 따뜻한 조언)' : '냉혹한 미식가'}
+
+          각 플레이어의 요리를 창조하고 1~500점 만점으로 채점해줘.
+          점수 구간: 1~110(일반), 111~190(우수), 191~280(희귀), 281~389(영웅), 390~449(전설), 450~484(레전드), 485~499(최상), 500(초월).
+          그리고 battleVerdict에는 두 요리를 직접 비교하며 승자의 승리 요인과 두 요리의 매력을 유쾌하게 3~4문장으로 작성해줘.
+        `;
+
+        const singleRecipeSchema = {
+          type: "OBJECT",
+          properties: {
+            title: { type: "STRING" },
+            score: { type: "INTEGER" },
+            tier: { type: "STRING" },
+            difficulty: { type: "STRING" },
+            cookTime: { type: "STRING" },
+            summary: { type: "STRING" },
+            ingredients: {
+              type: "ARRAY",
+              items: {
+                type: "OBJECT",
+                properties: {
+                  name: { type: "STRING" },
+                  amount: { type: "STRING" }
+                },
+                required: ["name", "amount"]
+              }
+            },
+            steps: { type: "ARRAY", items: { type: "STRING" } },
+            secretTip: { type: "STRING" },
+            criticReview: { type: "STRING" },
+            imagePrompt: { type: "STRING" }
+          },
+          required: ["title", "score", "tier", "difficulty", "cookTime", "summary", "ingredients", "steps", "secretTip", "criticReview", "imagePrompt"]
+        };
+
+        const textUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${cleanKey}`;
+        const textPayload = {
+          contents: [{ parts: [{ text: battleQuery }] }],
+          systemInstruction: { parts: [{ text: systemPrompt }] },
+          generationConfig: {
+            responseMimeType: "application/json",
+            responseSchema: {
+              type: "OBJECT",
+              properties: {
+                p1Recipe: singleRecipeSchema,
+                p2Recipe: singleRecipeSchema,
+                winner: { type: "STRING" },
+                battleVerdict: { type: "STRING" }
+              },
+              required: ["p1Recipe", "p2Recipe", "winner", "battleVerdict"]
+            }
+          }
+        };
+
+        const result = await callWithRetry(textUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(textPayload)
+        });
+
+        const parsed = JSON.parse(result.candidates?.[0]?.content?.parts?.[0]?.text || "{}");
+
+        const normalizeTier = (rec, ingCount, isNormal, forcedScore) => {
+          let s = forcedScore !== null ? forcedScore : 500;
+          rec.score = s;
+          rec.tier = getTierNameByScore(s);
+          return rec;
+        };
+
+        const nowId = Date.now();
+        const dateStr = new Date().toLocaleDateString('ko-KR', {
+          year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+
+        const p1Final = {
+          ...normalizeTier(parsed.p1Recipe, p1.ingredients.length, p1IsNormal, p1ForcedScore),
+          id: nowId + 1,
+          playerName: p1.name,
+          criticType: p1.critic,
+          image: null,
+          isImageLoading: state.imageGenEnabled,
+          createdDate: dateStr
+        };
+        const p2Final = {
+          ...normalizeTier(parsed.p2Recipe, p2.ingredients.length, p2IsNormal, p2ForcedScore),
+          id: nowId + 2,
+          playerName: p2.name,
+          criticType: p2.critic,
+          image: null,
+          isImageLoading: state.imageGenEnabled,
+          createdDate: dateStr
+        };
+
+        state.battleResult = {
+          p1: p1Final,
+          p2: p2Final,
+          winner: parsed.winner,
+          verdict: parsed.battleVerdict,
+          penaltyText: state.penaltyRouletteEnabled
+            ? PARTY_PENALTIES[Math.floor(Math.random() * PARTY_PENALTIES.length)]
+            : null
+        };
+
+        state.recipeHistory.unshift(p2Final, p1Final);
+        saveHistoryToStorage();
+        updateHistoryBadge();
+
+        renderBattleArena(state.battleResult);
+        playMagicSound('epic');
+
+        // 두 플레이어 이미지 병렬 비동기 생성 (설정이 켜져 있을 때만)
+        if (state.imageGenEnabled) {
+          generateRecipeImageAsync(p1Final.id, cleanKey, p1Final.imagePrompt);
+          generateRecipeImageAsync(p2Final.id, cleanKey, p2Final.imagePrompt);
+        }
+
+      } catch (err) {
+        console.error(err);
+        const errText = String(err.message || err);
+        if (errText.includes('API key not valid') || errText.includes('API_KEY_INVALID') || errText.includes('400')) {
+          openKeyModal();
+          showError("입력된 API 키가 유효하지 않습니다!\n\n열쇠(🔑) 설정창에서 Google AI Studio의 유효한 'AIza...' 키를 다시 입력한 뒤 '마력석 박기'를 눌러주세요.");
+        } else {
+          showError(`1:1 배틀 연성 중 마나 역류 발생!\n\n상세 오류:\n${errText}`);
+        }
+      } finally {
+        toggleBrewingState(false);
+      }
+    }
+
+    async function generateRecipeImageAsync(recipeId, cleanKey, rawPrompt) {
+      const imagePrompt = rawPrompt || `A delicious gourmet dish on a plate, professional food photography, warm soft lighting.`;
+      let finalImageUrl = null;
+      let imageErrorReason = "";
+
+      if (!state.skipGoogleImage) {
+        try {
+          const imageUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${cleanKey}`;
+          const imagePayload = {
+            contents: [{ parts: [{ text: `Generate a high-quality appetizing food photograph of: ${imagePrompt}` }] }],
+            generationConfig: {
+              responseModalities: ["IMAGE"],
+              imageConfig: { aspectRatio: "16:9" }
+            }
+          };
+
+          const imageResult = await callWithRetry(imageUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(imagePayload)
+          }, 0, 500);
+
+          const parts = imageResult?.candidates?.[0]?.content?.parts || [];
+          const imagePart = parts.find(p => p.inlineData || p.inline_data);
+          const inlineObj = imagePart?.inlineData || imagePart?.inline_data;
+
+          if (inlineObj && inlineObj.data) {
+            const mimeType = inlineObj.mimeType || inlineObj.mime_type || 'image/png';
+            finalImageUrl = `data:${mimeType};base64,${inlineObj.data}`;
+          }
+        } catch (imgErr) {
+          if (String(imgErr.message).includes('429')) {
+            state.skipGoogleImage = true;
+          }
+        }
+      }
+
+      if (!finalImageUrl) {
+        try {
+          const encodedPrompt = encodeURIComponent(`${imagePrompt}, delicious food photography, appetizing, studio lighting`);
+          const seed = Math.floor(Math.random() * 100000);
+          const fallbackUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=800&height=450&seed=${seed}&nologo=true&model=flux&enhance=false`;
+
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 7000);
+          const imgRes = await fetch(fallbackUrl, { signal: controller.signal });
+          clearTimeout(timeoutId);
+
+          if (imgRes.ok) {
+            const blob = await imgRes.blob();
+            finalImageUrl = await new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onloadend = () => resolve(reader.result);
+              reader.onerror = reject;
+              reader.readAsDataURL(blob);
+            });
+          } else {
+            imageErrorReason = `이미지 서버 응답 오류 (${imgRes.status})`;
+          }
+        } catch (fallbackErr) {
+          imageErrorReason = fallbackErr.name === 'AbortError' ? '이미지 생성 시간 초과' : '네트워크 환경 제한';
+        }
+      }
+
+      const target = state.recipeHistory.find(r => r.id === recipeId);
+      if (target) {
+        target.image = finalImageUrl;
+        target.isImageLoading = false;
+        target.imageErrorReason = imageErrorReason;
+        saveHistoryToStorage();
+      }
+
+      const imgContainer = document.getElementById(`recipe-img-container-${recipeId}`);
+      if (imgContainer) {
+        if (finalImageUrl) {
+          imgContainer.innerHTML = `
+            <img
+              src="${finalImageUrl}"
+              alt="${target ? target.title : '연성 요리'}"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 animate-fadeIn"
+            />
+          `;
+        } else {
+          imgContainer.innerHTML = `
+            <div class="w-full h-full bg-gradient-to-tr from-slate-900 via-purple-950 to-slate-900 flex flex-col items-center justify-center text-slate-500 space-y-2 p-4 text-center">
+              <i data-lucide="image" class="w-12 h-12 text-purple-400/30"></i>
+              <span class="text-xs text-slate-400">마법 비주얼 실체화에 실패함</span>
+              ${imageErrorReason ? `<span class="text-[11px] text-amber-400/90 font-medium">(${imageErrorReason})</span>` : ''}
+            </div>
+          `;
+          lucide.createIcons();
+        }
+      }
+    }
+
+    // --- UI Rendering Functions ---
+    function renderIngredients() {
+      const countEl = document.getElementById('ingredient-count');
+      const wrapperEl = document.getElementById('selected-ingredients-wrapper');
+      const listEl = document.getElementById('selected-ingredients-list');
+      const placeholderEl = document.getElementById('empty-ingredients-placeholder');
+
+      countEl.innerText = `${state.ingredients.length}개`;
+
+      if (state.ingredients.length > 0) {
+        wrapperEl.classList.remove('hidden');
+        placeholderEl.classList.add('hidden');
+        
+        listEl.innerHTML = state.ingredients.map(item => `
+          <div class="flex items-center space-x-1 bg-gradient-to-r from-purple-950 to-slate-900 border border-purple-800/60 rounded-lg px-2.5 py-1.5 text-xs font-medium text-purple-100 shadow-sm transition-all animate-fadeIn">
+            <span>${item.emoji}</span>
+            <span>${item.name}</span>
+            <button onclick="removeIngredient('${item.name.replace(/'/g, "\\'")}')" class="hover:bg-purple-900 rounded p-0.5 text-purple-400 hover:text-purple-200 transition-colors">
+              <i data-lucide="x" class="w-3 h-3"></i>
+            </button>
+          </div>
+        `).join('');
+      } else {
+        wrapperEl.classList.add('hidden');
+        placeholderEl.classList.remove('hidden');
+      }
+
+      renderPresetGrid();
+      lucide.createIcons();
+    }
+
+    function renderPresetGrid() {
+      const presetsGrid = document.getElementById('presets-grid');
+      presetsGrid.innerHTML = INGREDIENT_PRESETS.map(preset => {
+        const isSelected = state.ingredients.some(i => i.name === preset.name);
+        return `
+          <button
+            onclick="togglePreset('${preset.name}', '${preset.emoji}', '${preset.category}')"
+            class="flex flex-col items-center justify-center p-2 rounded-xl border text-xs transition-all ${
+              isSelected
+                ? 'bg-purple-950/40 border-purple-500 text-purple-200 shadow-md shadow-purple-500/10 scale-105'
+                : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200'
+            }"
+          >
+            <span class="text-xl mb-1">${preset.emoji}</span>
+            <span class="truncate w-full text-center">${preset.name}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function renderStylePresets() {
+      const stylesGrid = document.getElementById('styles-grid');
+      stylesGrid.innerHTML = STYLE_PRESETS.map(style => `
+        <button
+          onclick="selectStyle('${style.id}')"
+          class="flex items-center space-x-2 p-3 rounded-xl border text-left text-xs font-medium transition-all ${
+            state.selectedStyle === style.id
+              ? 'bg-gradient-to-r from-purple-950 to-slate-900 border-purple-500 text-purple-200'
+              : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
+          }"
+        >
+          <span class="text-base">${style.icon}</span>
+          <span>${style.label}</span>
+        </button>
+      `).join('');
+    }
+
+    function renderManaLevels() {
+      const manaList = document.getElementById('mana-levels-list');
+      manaList.innerHTML = MANA_LEVELS.map(level => `
+        <button
+          onclick="selectMana('${level.id}')"
+          class="w-full flex items-center justify-between p-3 rounded-xl border text-left transition-all ${
+            state.selectedMana === level.id
+              ? 'bg-gradient-to-r from-purple-950/40 to-slate-950 border-purple-500 text-purple-200'
+              : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
+          }"
+        >
+          <div>
+            <p class="text-xs font-semibold">${level.label}</p>
+            <p class="text-[10px] text-slate-500 mt-0.5">${level.desc}</p>
+          </div>
+          <div class="w-3.5 h-3.5 rounded-full border flex items-center justify-center ${
+            state.selectedMana === level.id ? 'border-purple-500 bg-purple-600' : 'border-slate-700'
+          }">
+            ${state.selectedMana === level.id ? '<div class="w-1.5 h-1.5 bg-white rounded-full"></div>' : ''}
+          </div>
+        </button>
+      `).join('');
+    }
+
+    function renderCriticPersonas() {
+      const grid = document.getElementById('critic-persona-grid');
+      if (!grid) return;
+      grid.innerHTML = CRITIC_PERSONAS.map(critic => `
+        <button
+          onclick="selectCritic('${critic.id}')"
+          class="flex items-start space-x-2.5 p-3 rounded-xl border text-left transition-all ${
+            state.selectedCritic === critic.id
+              ? critic.activeClass
+              : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
+          }"
+        >
+          <span class="text-xl mt-0.5">${critic.icon}</span>
+          <div>
+            <p class="text-xs font-bold">${critic.label}</p>
+            <p class="text-[10px] text-slate-400 mt-0.5 leading-snug">${critic.desc}</p>
+          </div>
+        </button>
+      `).join('');
+    }
+
+    function toggleBrewingState(brewing) {
+      state.isBrewing = brewing;
+      
+      const btn = document.getElementById('transmute-btn');
+      const emptyState = document.getElementById('result-empty');
+      const brewingState = document.getElementById('result-brewing');
+      const recipeCard = document.getElementById('recipe-card');
+
+      if (brewing) {
+        btn.disabled = true;
+        btn.className = 'w-full py-4 px-6 rounded-2xl font-bold text-base transition-all duration-300 flex items-center justify-center space-x-3 shadow-lg bg-purple-800/20 text-purple-400 border border-purple-800/50 cursor-not-allowed';
+        btn.innerHTML = `
+          <div class="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-purple-400"></div>
+          <span class="text-lg font-semibold tracking-wider">가마솥 보글보글 끓이는 중...</span>
+        `;
+        
+        emptyState.classList.add('hidden');
+        recipeCard.classList.add('hidden');
+        brewingState.classList.remove('hidden');
+      } else {
+        btn.disabled = false;
+        updateTransmuteButtonUI();
+        brewingState.classList.add('hidden');
+        if (state.gameMode === 'battle' && !state.battleResult) {
+          emptyState.classList.remove('hidden');
+        }
+      }
+    }
+
+    function renderBattleArena(battle) {
+      const arena = document.getElementById('battle-arena');
+      const { p1, p2, verdict } = battle;
+
+      let winnerSide = 'draw';
+      if (p1.score > p2.score) winnerSide = 'p1';
+      else if (p2.score > p1.score) winnerSide = 'p2';
+
+      const winnerTitle = winnerSide === 'p1'
+        ? `🏆 승자: ${p1.name} (${p1.score}점 vs ${p2.score}점)`
+        : winnerSide === 'p2'
+          ? `🏆 승자: ${p2.name} (${p2.score}점 vs ${p1.score}점)`
+          : `🤝 세기의 무승부! (${p1.score}점 동점)`;
+
+      const renderFighterCard = (rec, side) => {
+        const isWinner = winnerSide === side;
+        const sideColor = side === 'p1' ? 'from-blue-600/25 to-slate-900 border-blue-500/50 text-blue-300' : 'from-rose-600/25 to-slate-900 border-rose-500/50 text-rose-300';
+        const sideIcon = side === 'p1' ? '🔵' : '🔴';
+        const winBadge = isWinner
+          ? `<span class="px-2.5 py-0.5 rounded-full bg-amber-400 text-slate-950 text-[11px] font-black shadow-md animate-bounce">👑 WINNER</span>`
+          : (winnerSide === 'draw'
+              ? `<span class="px-2.5 py-0.5 rounded-full bg-purple-500 text-white text-[11px] font-black">🤝 DRAW</span>`
+              : `<span class="px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 text-[11px] font-bold">💀 DEFEAT</span>`);
+
+        let auraHtml = '';
+        if (rec.tier === '전설') auraHtml = `<div class="absolute inset-0 food-aura-yellow pointer-events-none z-20 mix-blend-screen"></div><div class="shine-sweep-bar pointer-events-none z-20"></div>`;
+        else if (rec.tier === '레전드') auraHtml = `<div class="absolute inset-0 food-aura-red pointer-events-none z-20 mix-blend-screen"></div><div class="shine-sweep-bar pointer-events-none z-20"></div>`;
+        else if (rec.tier === '최상') auraHtml = `<div class="absolute -inset-6 food-aura-spectrum pointer-events-none z-20 mix-blend-screen"></div><div class="shine-sweep-bar pointer-events-none z-20"></div>`;
+        else if (rec.tier === '초월') auraHtml = `<div class="absolute -inset-6 food-aura-purple pointer-events-none z-20 mix-blend-screen"></div><div class="absolute inset-0 food-inner-purple-ring pointer-events-none z-20"></div><div class="shine-sweep-bar pointer-events-none z-20"></div>`;
+
+        return `
+          <div class="border-2 ${rec.tier === '초월' ? 'card-aura-transcendent' : (isWinner ? 'border-amber-400 shadow-2xl shadow-amber-500/20' : 'border-slate-800 opacity-90')} bg-slate-900 rounded-3xl overflow-hidden flex flex-col">
+            <!-- Player Header Bar -->
+            <div class="px-5 py-3 bg-gradient-to-r ${sideColor} border-b flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <span class="text-sm font-black">${sideIcon} ${rec.playerName}</span>
+                ${winBadge}
+              </div>
+              <span class="text-base font-black text-amber-300">${rec.score} / 500점</span>
+            </div>
+
+            <!-- Food Image -->
+            <div class="relative h-56 w-full bg-slate-950 overflow-hidden">
+              ${auraHtml}
+              <div id="recipe-img-container-${rec.id}" class="w-full h-full relative z-10">
+                <div class="w-full h-full bg-gradient-to-tr from-slate-950 via-purple-950/50 to-slate-900 flex flex-col items-center justify-center text-purple-300 space-y-2">
+                  <div class="animate-spin rounded-full h-7 w-7 border-t-2 border-b-2 border-purple-400"></div>
+                  <span class="text-xs animate-pulse">${rec.playerName}의 요리 실체화 중...</span>
+                </div>
+              </div>
+              <div class="absolute top-3 right-3 z-30">
+                <span class="px-3 py-1 rounded-full text-xs font-extrabold border shadow-lg ${getTierColor(rec.tier)}">${rec.tier} 등급</span>
+              </div>
+              <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent p-4 pt-12 z-30">
+                <h3 class="text-lg font-black text-white">${rec.title}</h3>
+              </div>
+            </div>
+
+            <!-- Body -->
+            <div class="p-5 space-y-4 flex-1 flex flex-col justify-between">
+              <div class="space-y-3">
+                <p class="text-xs text-purple-300 italic border-l-2 border-purple-500 pl-2.5">"${rec.summary}"</p>
+                <div class="bg-slate-950/60 rounded-xl p-3 border border-slate-800">
+                  <p class="text-[11px] font-bold text-slate-400 mb-1.5">사용된 연성 원소</p>
+                  <div class="flex flex-wrap gap-1.5">
+                    ${rec.ingredients.map(i => `<span class="text-[11px] bg-slate-900 border border-slate-700 px-2 py-0.5 rounded-md text-slate-300">✨ ${i.name} (${i.amount})</span>`).join('')}
+                  </div>
+                </div>
+                <div class="space-y-1">
+                  <p class="text-[11px] font-bold text-purple-400">핵심 조리 스펠</p>
+                  <ol class="space-y-1.5 text-xs text-slate-300">
+                    ${rec.steps.map((st, idx) => `<li><strong class="text-purple-400">${idx + 1}.</strong> ${st}</li>`).join('')}
+                  </ol>
+                </div>
+              </div>
+
+              <div class="p-3.5 rounded-xl border mt-3 ${rec.criticType === 'grandma' ? 'bg-amber-950/25 border-amber-600/50' : (rec.score >= 280 ? 'bg-emerald-950/25 border-emerald-700/50' : 'bg-rose-950/25 border-rose-700/50')}">
+                <p class="text-[11px] font-bold mb-1 ${rec.criticType === 'grandma' ? 'text-amber-300' : (rec.score >= 280 ? 'text-emerald-400' : 'text-rose-400')}">
+                  ${rec.criticType === 'grandma' ? '👵 할머니의 따뜻한 한마디' : (rec.score >= 280 ? '👨‍🍳 미식가의 극찬 평' : '🤬 미식가의 직설 평')}
+                </p>
+                <p class="text-xs text-slate-200 leading-relaxed">"${rec.criticReview}"</p>
+              </div>
+            </div>
+          </div>
+        `;
+      };
+
+      arena.innerHTML = `
+        <!-- Victory Banner -->
+        <div class="p-6 rounded-3xl border-2 border-amber-400/70 bg-gradient-to-r from-slate-900 via-purple-950/60 to-slate-900 shadow-2xl text-center space-y-2 relative overflow-hidden">
+          <div class="shine-sweep-bar pointer-events-none"></div>
+          <p class="text-xs font-extrabold tracking-widest text-amber-400 uppercase">⚔️ 1 vs 1 연금술 대결 최종 판정</p>
+          <h2 class="text-2xl md:text-3xl font-black text-white drop-shadow">${winnerTitle}</h2>
+          <p class="text-xs md:text-sm text-purple-200 max-w-2xl mx-auto pt-1 leading-relaxed">"${verdict}"</p>
+          ${battle.penaltyText ? `
+            <div class="max-w-xl mx-auto mt-3 p-3 rounded-2xl bg-pink-950/50 border border-pink-500/50 text-xs text-pink-200 font-bold">
+              🎰 오늘의 배틀 벌칙 룰렛: ${battle.penaltyText}
+            </div>
+          ` : ''}
+          <div class="pt-3">
+            <button onclick="resetBattle()" class="px-5 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-purple-600 hover:from-rose-500 hover:to-purple-500 text-white text-xs font-bold shadow-lg transition-all">
+              🔄 새로운 1:1 배틀 시작하기
+            </button>
+          </div>
+        </div>
+
+        <!-- Two Fighters Comparison Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          ${renderFighterCard(p1, 'p1')}
+          ${renderFighterCard(p2, 'p2')}
+        </div>
+      `;
+
+      arena.classList.remove('hidden');
+      lucide.createIcons();
+      arena.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      const maxTier = (p1.tier === '초월' || p2.tier === '초월') ? '초월'
+        : (p1.tier === '최상' || p2.tier === '최상') ? '최상'
+        : (p1.tier === '레전드' || p2.tier === '레전드') ? '레전드'
+        : (p1.tier === '전설' || p2.tier === '전설') ? '전설' : null;
+      if (maxTier) triggerGrandRevealEffect(maxTier);
+    }
+
+    function renderRecipeShowcase(recipe) {
+      const card = document.getElementById('recipe-card');
+      let cardAuraClass = '';
+      let foodAuraHtml = '';
+      let grandBannerHtml = '';
+      let particlesHtml = '';
+
+      if (recipe.tier === '전설') {
+        cardAuraClass = 'card-aura-legendary';
+        foodAuraHtml = `
+          <div class="absolute inset-0 food-aura-yellow pointer-events-none z-20 mix-blend-screen"></div>
+          <div class="shine-sweep-bar pointer-events-none z-20"></div>
+        `;
+        grandBannerHtml = `
+          <div class="bg-gradient-to-r from-amber-600 via-yellow-400 to-amber-600 text-slate-950 text-center py-2 text-xs font-black tracking-widest uppercase shadow-lg">
+            ☀️ 전설 등급 연성 성공! 황금빛 태양의 축복 ☀️
+          </div>
+        `;
+      } else if (recipe.tier === '레전드') {
+        cardAuraClass = 'card-aura-legend';
+        foodAuraHtml = `
+          <div class="absolute inset-0 food-aura-red pointer-events-none z-20 mix-blend-screen"></div>
+          <div class="shine-sweep-bar pointer-events-none z-20"></div>
+        `;
+        grandBannerHtml = `
+          <div class="bg-gradient-to-r from-rose-700 via-red-500 to-rose-700 text-white text-center py-2 text-xs font-black tracking-widest uppercase shadow-lg">
+            🔥 레전드 등급 강림! 진홍의 패왕 오라 발현 🔥
+          </div>
+        `;
+      } else if (recipe.tier === '최상') {
+        cardAuraClass = 'card-aura-supreme';
+        foodAuraHtml = `
+          <div class="absolute -inset-6 food-aura-spectrum pointer-events-none z-20 mix-blend-screen"></div>
+          <div class="absolute inset-0 food-inner-prism-ring pointer-events-none z-20"></div>
+          <div class="shine-sweep-bar pointer-events-none z-20"></div>
+        `;
+        grandBannerHtml = `
+          <div class="tier-rainbow text-center py-2.5 text-xs font-black tracking-widest uppercase">
+            🌈 신의 영역! 최상 등급 스펙트럼 초월 연성 🌈
+          </div>
+        `;
+        const colors = ['#ff2400', '#ffe600', '#1de840', '#00d4ff', '#ff00c8', '#ffffff'];
+        particlesHtml = Array.from({ length: 18 }).map((_, i) => {
+          const left = 5 + (i * 5.2) % 90;
+          const delay = (i * 0.12).toFixed(2);
+          const color = colors[i % colors.length];
+          return `<span class="magic-particle z-30" style="left:${left}%; bottom:10%; width:7px; height:7px; background:${color}; box-shadow:0 0 10px ${color}; animation-delay:${delay}s;"></span>`;
+        }).join('');
+      } else if (recipe.tier === '초월') {
+        cardAuraClass = 'card-aura-transcendent';
+        foodAuraHtml = `
+          <div class="absolute -inset-6 food-aura-purple pointer-events-none z-20 mix-blend-screen"></div>
+          <div class="absolute inset-0 food-inner-purple-ring pointer-events-none z-20"></div>
+          <div class="shine-sweep-bar pointer-events-none z-20"></div>
+        `;
+        grandBannerHtml = `
+          <div class="tier-transcendent text-center py-3 text-xs font-black tracking-widest uppercase">
+            🌌 500점 만점 달성! 차원 지배자 [초월] 등급 강림 🌌
+          </div>
+        `;
+        const purpleColors = ['#f3e8ff', '#d8b4fe', '#c084fc', '#a855f7', '#7e22ce', '#f0abfc'];
+        particlesHtml = Array.from({ length: 24 }).map((_, i) => {
+          const left = 4 + (i * 4.1) % 92;
+          const delay = (i * 0.09).toFixed(2);
+          const color = purpleColors[i % purpleColors.length];
+          return `<span class="magic-particle z-30" style="left:${left}%; bottom:8%; width:8px; height:8px; background:${color}; box-shadow:0 0 14px ${color}; animation-delay:${delay}s;"></span>`;
+        }).join('');
+      }
+
+      card.className = `border bg-slate-900 rounded-3xl overflow-hidden animate-slideUp relative ${cardAuraClass}`;
+      card.innerHTML = `
+        ${grandBannerHtml}
+        <!-- Generated Image Header -->
+        <div class="relative h-64 w-full bg-slate-950 overflow-hidden group">
+          ${foodAuraHtml}
+          ${particlesHtml}
+          <div id="recipe-img-container-${recipe.id}" class="w-full h-full relative z-10">
+            ${recipe.image ? `
+              <img
+                src="${recipe.image}"
+                alt="${recipe.title}"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+              />
+            ` : recipe.isImageLoading ? `
+              <div class="w-full h-full bg-gradient-to-tr from-slate-950 via-purple-950/60 to-slate-900 flex flex-col items-center justify-center text-purple-300 space-y-2 p-4 text-center">
+                <div class="animate-spin rounded-full h-7 w-7 border-t-2 border-b-2 border-purple-400"></div>
+                <span class="text-xs font-medium animate-pulse">마법 비주얼 실체화 중...</span>
+              </div>
+            ` : `
+              <div class="w-full h-full bg-gradient-to-tr from-slate-900 via-purple-950 to-slate-900 flex flex-col items-center justify-center text-slate-500 space-y-2 p-4 text-center">
+                <i data-lucide="image" class="w-12 h-12 text-purple-400/30"></i>
+                <span class="text-xs text-slate-400">마법 비주얼 실체화에 실패함 (식재료 마법 충돌)</span>
+                ${recipe.imageErrorReason ? `<span class="text-[11px] text-amber-400/90 font-medium">(${recipe.imageErrorReason})</span>` : `<span class="text-[10px] text-slate-600">하지만 레시피는 강력합니다!</span>`}
+              </div>
+            `}
+          </div>
+          
+          <!-- Tier & Score Tag Overlay -->
+          <div class="absolute top-4 right-4 flex items-center space-x-2 z-30">
+            <span class="px-3.5 py-1.5 rounded-full text-xs font-black tracking-wider border shadow-lg bg-slate-950/85 backdrop-blur-md border-slate-700 text-amber-300">
+              🏆 ${recipe.score} / 500점
+            </span>
+            <span class="px-4 py-1.5 rounded-full text-xs font-extrabold tracking-widest border shadow-lg ${getTierColor(recipe.tier)}">
+              ${recipe.tier} 등급
+            </span>
+          </div>
+
+          <!-- Meta info Overlay -->
+          <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-transparent p-6 pt-16 z-30">
+            <div class="flex items-center space-x-2 text-xs font-semibold text-amber-400 mb-1">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+              <span>${recipe.isNormalCooking ? '정통 가정식 레시피 완성' : '전설적 요리사 소환 완료'}</span>
+            </div>
+            <h2 class="text-xl md:text-2xl font-black text-white tracking-tight drop-shadow-md">
+              ${recipe.title}
+            </h2>
+          </div>
+        </div>
+
+        <!-- Recipe Specs -->
+        <div class="p-6 space-y-5">
+          <!-- Summary -->
+          <div class="border-l-4 border-purple-500 pl-3 py-1 bg-purple-950/20 rounded-r-xl">
+            <p class="text-xs text-purple-300 italic leading-relaxed">
+              "${recipe.summary}"
+            </p>
+          </div>
+
+          <div class="flex items-center justify-around border-y border-slate-800 py-3 text-center">
+            <div>
+              <p class="text-[10px] uppercase tracking-wider text-slate-500">내기 종합 점수</p>
+              <p class="text-sm font-black text-amber-400 mt-0.5">${recipe.score}점</p>
+            </div>
+            <div class="w-px h-8 bg-slate-800"></div>
+            <div>
+              <p class="text-[10px] uppercase tracking-wider text-slate-500">필요 마법 난이도</p>
+              <p class="text-sm font-bold text-slate-200 mt-0.5">${recipe.difficulty}</p>
+            </div>
+            <div class="w-px h-8 bg-slate-800"></div>
+            <div>
+              <p class="text-[10px] uppercase tracking-wider text-slate-500">예상 시전 시간</p>
+              <p class="text-sm font-bold text-slate-200 mt-0.5 flex items-center justify-center">
+                <i data-lucide="clock" class="w-3.5 h-3.5 mr-1 text-slate-400"></i>
+                ${recipe.cookTime}
+              </p>
+            </div>
+          </div>
+
+          <!-- Ingredients needed -->
+          <div class="space-y-2">
+            <h4 class="text-xs font-bold text-purple-400 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 mr-1.5"><path d="M12 2v6"/><path d="M8 8h8"/><path d="M16 8l3.6 7.2a4 4 0 0 1-3.6 5.8H8a4 4 0 0 1-3.6-5.8L8 8"/><path d="M6 14h12"/></svg>
+              <span>요구 연성 원소 (식재료 계량)</span>
+            </h4>
+            <div class="bg-slate-950/50 rounded-xl p-3.5 border border-slate-800/60">
+              <ul class="grid grid-cols-2 gap-x-4 gap-y-2">
+                ${recipe.ingredients.map(ing => `
+                  <li class="flex justify-between text-xs py-0.5">
+                    <span class="text-slate-300 font-medium">✨ ${ing.name}</span>
+                    <span class="text-purple-400 font-semibold">${ing.amount}</span>
+                  </li>
+                `).join('')}
+              </ul>
+            </div>
+          </div>
+
+          <!-- Steps -->
+          <div class="space-y-2">
+            <h4 class="text-xs font-bold text-purple-400 flex items-center">
+              <i data-lucide="utensils" class="w-3.5 h-3.5 mr-1.5"></i>
+              <span>연성 조리 스펠 (조리 방법)</span>
+            </h4>
+            <ol class="space-y-3">
+              ${recipe.steps.map((step, idx) => `
+                <li class="flex items-start text-xs bg-slate-950/30 p-2.5 rounded-lg border border-slate-800">
+                  <span class="bg-purple-900/30 border border-purple-500/20 text-purple-300 text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shrink-0 mr-2.5">
+                    ${idx + 1}
+                  </span>
+                  <span class="text-slate-300 leading-relaxed">${step}</span>
+                </li>
+              `).join('')}
+            </ol>
+          </div>
+
+          <!-- Secret Tip -->
+          <div class="p-4 bg-amber-950/20 border border-amber-900/50 rounded-xl space-y-1">
+            <h4 class="text-xs font-bold text-amber-400 flex items-center">
+              <i data-lucide="wand-2" class="w-3.5 h-3.5 mr-1.5"></i>
+              <span>대마법사의 비법 룬</span>
+            </h4>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              ${recipe.secretTip}
+            </p>
+          </div>
+
+          <!-- Critic Review -->
+          <div class="p-4 rounded-xl space-y-1.5 border ${recipe.criticType === 'grandma' ? 'bg-amber-950/25 border-amber-600/50' : (recipe.score >= 280 ? 'bg-emerald-950/25 border-emerald-700/50' : 'bg-rose-950/25 border-rose-700/50')}">
+            <h4 class="text-xs font-bold flex items-center ${recipe.criticType === 'grandma' ? 'text-amber-300' : (recipe.score >= 280 ? 'text-emerald-400' : 'text-rose-400')}">
+              <i data-lucide="message-square-quote" class="w-3.5 h-3.5 mr-1.5"></i>
+              <span>${
+                recipe.criticTheme === 'ramsay' ? '🔥 고든 램지의 사자후 평가'
+                : recipe.criticTheme === 'elementary' ? '🧒 초딩 입맛 심사위원의 솔직 평'
+                : recipe.criticTheme === 'baek' ? '👨‍🍳 구수한 백셰프의 시식평'
+                : recipe.criticTheme === 'chuuni' ? '😈 암흑 대마왕의 심판'
+                : recipe.criticTheme === 'joseon' ? '👑 대령숙수의 수라간 상소'
+                : recipe.criticType === 'grandma' ? '👵 따뜻한 할머니의 칭찬과 조언'
+                : (recipe.score >= 280 ? '👨‍🍳 거친 미식가의 츤데레 극찬' : '🤬 거친 미식가의 뼈 때리는 반말 독설')
+              }</span>
+            </h4>
+            <p class="text-xs text-slate-200 leading-relaxed font-medium">
+              "${recipe.criticReview}"
+            </p>
+          </div>
+
+          ${recipe.eventText ? `
+            <div class="p-3.5 rounded-xl bg-cyan-950/40 border border-cyan-500/40 text-xs text-cyan-200 font-semibold leading-relaxed">
+              ${recipe.eventText}
+            </div>
+          ` : ''}
+
+          ${recipe.penaltyText ? `
+            <div class="p-4 rounded-xl bg-gradient-to-r from-pink-950/50 to-purple-950/50 border border-pink-500/50 space-y-1">
+              <h4 class="text-xs font-black text-pink-300 flex items-center">
+                <span>🎰 예능 내기 벌칙 & 미션 룰렛</span>
+              </h4>
+              <p class="text-xs text-pink-100 font-bold leading-relaxed">
+                ${recipe.penaltyText}
+              </p>
+            </div>
+          ` : ''}
+        </div>
+      `;
+      card.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function renderHistory() {
+      const emptyEl = document.getElementById('history-empty');
+      const gridEl = document.getElementById('history-grid');
+      const clearBtn = document.getElementById('clear-history-btn');
+
+      if (state.recipeHistory.length > 0) {
+        emptyEl.classList.add('hidden');
+        gridEl.classList.remove('hidden');
+        clearBtn.classList.remove('hidden');
+
+        gridEl.innerHTML = state.recipeHistory.map(recipe => `
+          <div
+            onclick="openDetailModal(${recipe.id})"
+            class="group relative bg-slate-900 hover:bg-slate-900/80 border border-slate-800 hover:border-purple-900/60 rounded-2xl p-4 flex space-x-4 cursor-pointer transition-all duration-300 hover:scale-[1.01] hover:shadow-lg hover:shadow-purple-900/10"
+          >
+            <!-- Small preview image -->
+            <div class="w-20 h-20 bg-slate-950 rounded-xl overflow-hidden shrink-0 border border-slate-800">
+              ${recipe.image ? `
+                <img src="${recipe.image}" alt="${recipe.title}" class="w-full h-full object-cover" />
+              ` : `
+                <div class="w-full h-full flex items-center justify-center bg-purple-950/20 text-purple-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><path d="M12 2v6"/><path d="M8 8h8"/><path d="M16 8l3.6 7.2a4 4 0 0 1-3.6 5.8H8a4 4 0 0 1-3.6-5.8L8 8"/><path d="M6 14h12"/></svg>
+                </div>
+              `}
+            </div>
+
+            <div class="flex-1 min-w-0 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-1.5">
+                    <span class="text-[9px] font-black px-2 py-0.5 rounded border ${getTierColor(recipe.tier)}">
+                      ${recipe.tier}
+                    </span>
+                    ${recipe.score !== undefined ? `<span class="text-[10px] font-bold text-amber-400">${recipe.score}점</span>` : ''}
+                  </div>
+                  <span class="text-[10px] text-slate-500">${recipe.cookTime}</span>
+                </div>
+                <h3 class="text-sm font-bold text-slate-200 mt-1 truncate group-hover:text-purple-400 transition-colors">
+                  ${recipe.title}
+                </h3>
+                <p class="text-[11px] text-slate-400 truncate mt-0.5">
+                  ${recipe.summary}
+                </p>
+              </div>
+              <span class="text-[9px] text-slate-500 block mt-1">연성일: ${recipe.createdDate}</span>
+            </div>
+          </div>
+        `).join('');
+      } else {
+        emptyEl.classList.remove('hidden');
+        gridEl.classList.add('hidden');
+        clearBtn.classList.add('hidden');
+      }
+      lucide.createIcons();
+    }
+
+    function updateHistoryBadge() {
+      const badge = document.getElementById('history-badge');
+      if (state.recipeHistory.length > 0) {
+        badge.innerText = state.recipeHistory.length;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    }
+
+    function showError(message) {
+      const box = document.getElementById('error-box');
+      box.innerText = `⚠️ ${message}`;
+      box.classList.remove('hidden');
+    }
+
+    function hideError() {
+      document.getElementById('error-box').classList.add('hidden');
+    }
+
+    // --- Onload Initialization ---
+    window.onload = function() {
+      const savedKey = localStorage.getItem('recipe_alchemist_key') || "";
+      if (savedKey !== "") {
+        state.userApiKey = savedKey;
+      }
+      checkKeyStatus();
+
+      loadHistoryFromStorage();
+      updateHistoryBadge();
+
+      renderIngredients();
+      renderStylePresets();
+      renderManaLevels();
+      renderCriticPersonas();
+      
+      lucide.createIcons();
+    };
+  </script>
+</body>
+</html>
